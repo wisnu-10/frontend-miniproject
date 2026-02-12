@@ -1,73 +1,88 @@
-# React + TypeScript + Vite
+# EventHype - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+EventHype is a modern event discovery and management platform. This repository contains the frontend application, built with React, TypeScript, and Vite.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 🛒 Event Discovery
+- **Browse Events**: View a list of upcoming events with infinite scroll/pagination support.
+- **Search**: Real-time search by event name.
+- **Filtering**: Filter events by category, location (city), price range, and free/paid status.
+- **Event Details**: comprehensive view of event information, including description, date/time, location, and ticket availability.
 
-## React Compiler
+### 🎟️ Booking & Promotions
+- **Ticket Selection**: View available ticket types and prices.
+- **Promotions**: See active promotions and discounts for specific events.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 👥 User Roles
+- **Customer**: Browse and book events (Booking flow to be implemented).
+- **Organizer**: Create and manage events and promotions.
 
-## Expanding the ESLint configuration
+### 🔧 Organizer Dashboard
+- **Dashboard**: View a list of created events.
+- **Create Event**: Comprehensive form to publish new events with multiple ticket types.
+- **Promotions**: Create discount vouchers for events.
+- **Management**: Edit and delete events.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 🔐 Authentication
+- **Secure Login/Register**: User authentication using JWT.
+- **Role-Based Access Control**: Protected routes for organizer-only features.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Tech Stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **Framework**: [React](https://react.dev/) with [TypeScript](https://www.typescriptlang.org/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) + [DaisyUI](https://daisyui.com/)
+- **State Management**: [Zustand](https://github.com/pmndrs/zustand)
+- **Routing**: [React Router DOM](https://reactrouter.com/)
+- **API Client**: [Axios](https://axios-http.com/)
+- **Forms**: [Formik](https://formik.org/) + [Yup](https://github.com/jquense/yup)
+- **Icons**: [React Icons](https://react-icons.github.io/react-icons/)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Getting Started
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Prerequisites
+- Node.js (v18 or higher)
+- npm or yarn
+- Backend API running on `http://localhost:8000`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Installation
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1.  **Clone the repository** (if you haven't already).
+2.  **Navigate to the frontend directory**:
+    ```bash
+    cd frontend-miniproject
+    ```
+3.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+
+### Running the Application
+
+1.  **Start the development server**:
+    ```bash
+    npm run dev
+    ```
+2.  Open your browser and navigate to `http://localhost:5173`.
+
+### key Components Structure
+
+- `src/components`: Reusable UI components (Navbar, EventCard, FilterSidebar).
+- `src/pages`: Page components corresponding to routes (HomePage, EventDetailsPage, CreateEventPage).
+- `src/services`: API integration logic (`api.ts`).
+- `src/store`: Global state management (`useAuthStore.ts`).
+- `src/types`: TypeScript interfaces and types.
+- `src/hooks`: Custom hooks (`useDebounce.ts`).
+
+## API Integration
+
+The frontend is configured to communicate with the backend at `http://localhost:8000/api`. Ensure your backend server is running and accessible at this URL.
+
+## Screenshots
+
+*(Add screenshots here)*
+
+## License
+
+[MIT](LICENSE)
