@@ -1,32 +1,43 @@
 import { create } from "zustand";
 import type { User } from "../types";
+import api from "../services/api";
 
 interface AuthState {
-    user: User | null;
-    isAuthenticated: boolean;
-    token: string | null;
-    login: (user: User, token: string) => void;
-    logout: () => void;
+  user: User | null;
+  isAuthenticated: boolean;
+  isCheckingAuth: boolean;
+  login: (user: User) => void;
+  logout: () => Promise<void>;
+  checkAuth: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set) => {
-    // Initialize state from local storage to persist login
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  isAuthenticated: false,
+  isCheckingAuth: true,
 
-    return {
-        user: storedUser ? JSON.parse(storedUser) : null,
-        token: storedToken,
-        isAuthenticated: !!storedToken,
-        login: (user, token) => {
-            localStorage.setItem("token", token);
-            localStorage.setItem("user", JSON.stringify(user));
-            set({ user, token, isAuthenticated: true });
-        },
-        logout: () => {
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            set({ user: null, token: null, isAuthenticated: false });
-        },
-    };
-});
+  login: (user) => {
+    set({ user, isAuthenticated: true });
+  },
+
+  logout: async () => {
+    try {
+      await api.post("/auth/logout");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+    set({ user: null, isAuthenticated: false });
+  },
+
+  checkAuth: async () => {
+    set({ isCheckingAuth: true });
+    try {
+      const response = await api.get<{ profile: User }>("/users/me/profile");
+      set({ user: response.data.profile, isAuthenticated: true });
+    } catch (error) {
+      set({ user: null, isAuthenticated: false });
+    } finally {
+      set({ isCheckingAuth: false });
+    }
+  },
+}));
