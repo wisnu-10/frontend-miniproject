@@ -10,22 +10,26 @@ EventHype is a modern event discovery and management platform. This repository c
 - **Filtering**: Filter events by category, location (city), price range, and free/paid status.
 - **Event Details**: comprehensive view of event information, including description, date/time, location, and ticket availability.
 
-### 🎟️ Booking & Promotions
-- **Ticket Selection**: View available ticket types and prices.
-- **Promotions**: See active promotions and discounts for specific events.
+### 💳 Functionality: Transactions
+- **Checkout**: Seamless booking flow for purchasing event tickets (Customer Only).
+- **Discounts**: Apply Promotions, Coupons, or Points to your purchase (exclusive selection).
+- **Payment**: Upload payment proof for manual verification.
+- **History**: View past transactions with status tracking and filter options (Customer Only).
+- **Countdown**: Real-time timer for pending payments to ensure timely completion.
 
 ### 👥 User Roles
-- **Customer**: Browse and book events (Booking flow to be implemented).
-- **Organizer**: Create and manage events and promotions.
+- **Customer**: Browse, book events, and manage personal transactions.
+- **Organizer**: Create events, manage promotions, and verify/reject customer transactions.
 
 ### 🔧 Organizer Dashboard
 - **Dashboard**: View a list of created events.
 - **Create Event**: Comprehensive form to publish new events with multiple ticket types.
 - **Promotions**: Create discount vouchers for events.
+- **Transaction Management**: View all transactions for owned events and accept/reject them with ease.
 - **Management**: Edit and delete events.
 
 ### 🔐 Authentication
-- **Secure Login/Register**: User authentication using JWT.
+- **Secure Login/Register**: User authentication using JWT and HttpOnly cookies.
 - **Role-Based Access Control**: Protected routes for organizer-only features.
 
 ## Tech Stack
@@ -66,11 +70,14 @@ EventHype is a modern event discovery and management platform. This repository c
     ```
 2.  Open your browser and navigate to `http://localhost:5173`.
 
-### key Components Structure
+### Key Components Structure
 
 - `src/components`: Reusable UI components (Navbar, EventCard, FilterSidebar).
 - `src/pages`: Page components corresponding to routes (HomePage, EventDetailsPage, CreateEventPage).
-- `src/services`: API integration logic (`api.ts`).
+    - `src/pages/checkout`: Checkout flow components.
+    - `src/pages/transactions`: Transaction history and detail pages.
+    - `src/pages/organizer`: Organizer-specific dashboards and forms.
+- `src/services`: API integration logic (`api.ts`, `transaction.service.ts`).
 - `src/store`: Global state management (`useAuthStore.ts`).
 - `src/types`: TypeScript interfaces and types.
 - `src/hooks`: Custom hooks (`useDebounce.ts`).
@@ -78,10 +85,6 @@ EventHype is a modern event discovery and management platform. This repository c
 ## API Integration
 
 The frontend is configured to communicate with the backend at `http://localhost:8000/api`. Ensure your backend server is running and accessible at this URL.
-
-## Screenshots
-
-*(Add screenshots here)*
 
 ## License
 

@@ -9,7 +9,7 @@ export interface User {
 }
 
 export interface TicketType {
-  id: number;
+  id: string; // Changed to string to match UUID
   name: string;
   price: number;
   quantity: number;

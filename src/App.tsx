@@ -8,6 +8,10 @@ import EventDetailsPage from "./pages/EventDetailsPage";
 import DashboardPage from "./pages/DashboardPage";
 import CreateEventPage from "./pages/CreateEventPage";
 import CreatePromotionPage from "./pages/CreatePromotionPage";
+import CheckoutPage from "./pages/checkout/CheckoutPage";
+import TransactionDetailPage from "./pages/transactions/TransactionDetailPage";
+import TransactionListPage from "./pages/transactions/TransactionListPage";
+import OrganizerTransactions from "./pages/organizer/OrganizerTransactions";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuthStore } from "./store/useAuthStore";
 
@@ -28,9 +32,17 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/events/:id" element={<EventDetailsPage />} />
 
+          {/* App Routes */}
+          <Route element={<ProtectedRoute allowedRoles={["CUSTOMER"]} />}>
+            <Route path="/checkout/:eventId" element={<CheckoutPage />} />
+            <Route path="/transactions" element={<TransactionListPage />} />
+            <Route path="/transactions/:id" element={<TransactionDetailPage />} />
+          </Route>
+
           {/* Organizer Routes */}
           <Route element={<ProtectedRoute allowedRoles={["ORGANIZER"]} />}>
             <Route path="/organizer/dashboard" element={<DashboardPage />} />
+            <Route path="/organizer/transactions" element={<OrganizerTransactions />} />
             <Route
               path="/organizer/create-event"
               element={<CreateEventPage />}
