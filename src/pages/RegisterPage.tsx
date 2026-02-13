@@ -1,50 +1,50 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useFormik } from "formik";
+import { registerSchema, type RegisterValues } from "../validation";
 import api from "../services/api";
 
 const RegisterPage: React.FC = () => {
-  const [formData, setFormData] = useState({
-    full_name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    role: "CUSTOMER",
-    phone_number: "",
-    referral_code: "",
-  });
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(""); // Clear previous errors
-
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    try {
-      await api.post("/auth/register", formData);
-      navigate("/login");
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Registration failed");
-      if (err.response?.data?.errors) {
-        setError(err.response.data.errors.map((e: any) => e.msg).join(", "));
+  const formik = useFormik<RegisterValues>({
+    initialValues: {
+      full_name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      role: "CUSTOMER",
+      phone_number: "",
+      referral_code: "",
+    },
+    validationSchema: registerSchema,
+    onSubmit: async (values, { setSubmitting }) => {
+      setError("");
+      try {
+        await api.post("/auth/register", values);
+        navigate("/login");
+      } catch (err: any) {
+        if (err.response?.data?.errors) {
+          setError(err.response.data.errors.map((e: any) => e.msg).join(", "));
+        } else {
+          setError(err.response?.data?.message || "Registration failed");
+        }
+      } finally {
+        setSubmitting(false);
       }
-    }
-  };
+    },
+  });
+
+  const showFieldError = (field: keyof RegisterValues) =>
+    formik.touched[field] && formik.errors[field] ? (
+      <span className="text-error text-xs mt-1">{formik.errors[field]}</span>
+    ) : null;
 
   return (
     <div className="flex justify-center items-center py-10 min-h-screen bg-base-100">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={formik.handleSubmit}
         className="p-8 bg-base-200 rounded-lg shadow-xl w-96"
       >
         <h2 className="text-3xl font-bold mb-6 text-center text-primary">
@@ -60,10 +60,12 @@ const RegisterPage: React.FC = () => {
             type="text"
             name="full_name"
             placeholder="John Doe"
-            onChange={handleChange}
-            className="input input-bordered w-full"
-            required
+            value={formik.values.full_name}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className={`input input-bordered w-full ${formik.touched.full_name && formik.errors.full_name ? "input-error" : ""}`}
           />
+          {showFieldError("full_name")}
         </div>
 
         <div className="form-control mb-3">
@@ -74,10 +76,12 @@ const RegisterPage: React.FC = () => {
             type="email"
             name="email"
             placeholder="john@example.com"
-            onChange={handleChange}
-            className="input input-bordered w-full"
-            required
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className={`input input-bordered w-full ${formik.touched.email && formik.errors.email ? "input-error" : ""}`}
           />
+          {showFieldError("email")}
         </div>
 
         <div className="form-control mb-3">
@@ -88,7 +92,9 @@ const RegisterPage: React.FC = () => {
             type="tel"
             name="phone_number"
             placeholder="08123456789"
-            onChange={handleChange}
+            value={formik.values.phone_number}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
             className="input input-bordered w-full"
           />
         </div>
@@ -101,10 +107,12 @@ const RegisterPage: React.FC = () => {
             type="password"
             name="password"
             placeholder="******"
-            onChange={handleChange}
-            className="input input-bordered w-full"
-            required
+            value={formik.values.password}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className={`input input-bordered w-full ${formik.touched.password && formik.errors.password ? "input-error" : ""}`}
           />
+          {showFieldError("password")}
         </div>
 
         <div className="form-control mb-3">
@@ -115,10 +123,12 @@ const RegisterPage: React.FC = () => {
             type="password"
             name="confirmPassword"
             placeholder="******"
-            onChange={handleChange}
-            className="input input-bordered w-full"
-            required
+            value={formik.values.confirmPassword}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className={`input input-bordered w-full ${formik.touched.confirmPassword && formik.errors.confirmPassword ? "input-error" : ""}`}
           />
+          {showFieldError("confirmPassword")}
         </div>
 
         <div className="form-control mb-3">
@@ -127,16 +137,17 @@ const RegisterPage: React.FC = () => {
           </label>
           <select
             name="role"
-            onChange={handleChange}
+            value={formik.values.role}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
             className="select select-bordered w-full"
-            value={formData.role}
           >
             <option value="CUSTOMER">Customer</option>
             <option value="ORGANIZER">Organizer</option>
           </select>
         </div>
 
-        {formData.role === "CUSTOMER" && (
+        {formik.values.role === "CUSTOMER" && (
           <div className="form-control mb-3">
             <label className="label">
               <span className="label-text font-semibold">
@@ -147,22 +158,28 @@ const RegisterPage: React.FC = () => {
               type="text"
               name="referral_code"
               placeholder="REF123"
-              onChange={handleChange}
+              value={formik.values.referral_code}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               className="input input-bordered w-full"
             />
           </div>
         )}
 
-        <button type="submit" className="btn btn-primary w-full text-lg">
-          Register
+        <button
+          type="submit"
+          className={`btn btn-primary w-full text-lg ${formik.isSubmitting ? "loading" : ""}`}
+          disabled={formik.isSubmitting}
+        >
+          {formik.isSubmitting ? "Registering..." : "Register"}
         </button>
 
         <div className="mt-4 text-center">
           <p className="text-sm">
             Already have an account?{" "}
-            <a href="/login" className="link link-primary">
+            <Link to="/login" className="link link-primary">
               Login
-            </a>
+            </Link>
           </p>
         </div>
       </form>

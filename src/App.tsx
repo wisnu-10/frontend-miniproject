@@ -12,6 +12,11 @@ import CheckoutPage from "./pages/checkout/CheckoutPage";
 import TransactionDetailPage from "./pages/transactions/TransactionDetailPage";
 import TransactionListPage from "./pages/transactions/TransactionListPage";
 import OrganizerTransactions from "./pages/organizer/OrganizerTransactions";
+import ProfilePage from "./pages/ProfilePage";
+import ChangePasswordPage from "./pages/ChangePasswordPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import MyRewardsPage from "./pages/MyRewardsPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuthStore } from "./store/useAuthStore";
 
@@ -25,24 +30,43 @@ function App() {
   return (
     <div className="min-h-screen bg-base-200 flex flex-col">
       <Navbar />
-      <main className="flex-grow">
+      <main className="grow">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/events/:id" element={<EventDetailsPage />} />
 
-          {/* App Routes */}
+          {/* Protected Routes (both roles) */}
+          <Route
+            element={
+              <ProtectedRoute allowedRoles={["CUSTOMER", "ORGANIZER"]} />
+            }
+          >
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/change-password" element={<ChangePasswordPage />} />
+            <Route path="/my-rewards" element={<MyRewardsPage />} />
+          </Route>
+
+          {/* Customer Routes */}
           <Route element={<ProtectedRoute allowedRoles={["CUSTOMER"]} />}>
             <Route path="/checkout/:eventId" element={<CheckoutPage />} />
             <Route path="/transactions" element={<TransactionListPage />} />
-            <Route path="/transactions/:id" element={<TransactionDetailPage />} />
+            <Route
+              path="/transactions/:id"
+              element={<TransactionDetailPage />}
+            />
           </Route>
 
           {/* Organizer Routes */}
           <Route element={<ProtectedRoute allowedRoles={["ORGANIZER"]} />}>
             <Route path="/organizer/dashboard" element={<DashboardPage />} />
-            <Route path="/organizer/transactions" element={<OrganizerTransactions />} />
+            <Route
+              path="/organizer/transactions"
+              element={<OrganizerTransactions />}
+            />
             <Route
               path="/organizer/create-event"
               element={<CreateEventPage />}
