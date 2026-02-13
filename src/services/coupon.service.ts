@@ -1,25 +1,26 @@
 import api from "./api";
-import type { Promotion } from "../types";
 
 export interface Coupon {
-    id: string;
-    code: string;
-    discount_percentage?: number;
-    discount_amount?: number;
-    valid_until: string;
-    is_used: boolean;
+  id: string;
+  code: string;
+  discount_percentage: number | null;
+  discount_amount: number | null;
+  valid_from: string;
+  valid_until: string;
+  is_used: boolean;
+  is_expired: boolean;
+  is_valid: boolean;
+  created_at: string;
 }
 
 export const getMyCoupons = async (): Promise<Coupon[]> => {
-    const response = await api.get("/coupons/my-coupons");
-    return response.data.data;
+  const response = await api.get<{ coupons: Coupon[] }>("/users/me/coupons");
+  return response.data.coupons;
 };
 
-export const checkPromotion = async (_code: string, _eventId: string): Promise<Promotion> => {
-    // Assuming there's an endpoint to check promotion validity
-    // If not, we might need to filter from event details or try to apply it
-    // For now, let's assume a specific check endpoint or we filter client side from event details
-    // But better to check server side.
-
-    return Promise.reject("Not implemented");
+export const validateCoupon = async (
+  code: string,
+): Promise<{ valid: boolean; coupon: Coupon }> => {
+  const response = await api.get(`/users/me/coupons/validate/${code}`);
+  return response.data;
 };
