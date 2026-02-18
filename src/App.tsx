@@ -17,6 +17,8 @@ import ChangePasswordPage from "./pages/ChangePasswordPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import MyRewardsPage from "./pages/MyRewardsPage";
+import OrganizerProfilePage from "./pages/OrganizerProfilePage";
+import MyReviewsPage from "./pages/MyReviewsPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuthStore } from "./store/useAuthStore";
 
@@ -38,6 +40,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/events/:id" element={<EventDetailsPage />} />
+          <Route path="/organizers/:organizerId" element={<OrganizerProfilePage />} />
 
           {/* Protected Routes (both roles) */}
           <Route
@@ -58,6 +61,7 @@ function App() {
               path="/transactions/:id"
               element={<TransactionDetailPage />}
             />
+            <Route path="/my-reviews" element={<MyReviewsPage />} />
           </Route>
 
           {/* Organizer Routes */}
