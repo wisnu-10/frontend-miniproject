@@ -9,42 +9,62 @@ export interface User {
 }
 
 export interface TicketType {
-  id: string; // Changed to string to match UUID
+  id: string;
   name: string;
+  description?: string;
   price: number;
   quantity: number;
-  available_quantity: number; // guessed
-  event_id: number;
+  available_quantity: number;
+  event_id: string;
 }
 
 export interface Promotion {
-  id: number;
+  id: string;
   code: string;
-  discount_amount: number;
-  discount_percentage: number;
+  discount_amount: number | null;
+  discount_percentage: number | null;
   valid_from: string;
   valid_until: string;
-  usage_limit: number;
-  event_id: number;
+  max_usage: number;
+  current_usage: number;
+  event_id: string;
+}
+
+export interface EventCategory {
+  id: string;
+  name: string;
 }
 
 export interface Event {
-  id: number;
-  name: string; // Was title
+  id: string;
+  name: string;
   description: string;
-  base_price: number; // Was price
-  available_seats: number; // Was availableSeats
-  start_date: string; // Was startDate
-  end_date: string; // Was endDate
+  base_price: number;
+  total_seats: number;
+  available_seats: number;
+  start_date: string;
+  end_date: string;
   city: string;
   province: string;
-  // location: string; // Removed, use city/province
-  category: string;
-  organizer_id: number; // Was organizerId
-  ticket_types?: TicketType[]; // Was ticketTypes
+  category: EventCategory;
+  category_id: string;
+  organizer_id: string;
+  organizer?: {
+    id: string;
+    full_name: string;
+    email?: string;
+  };
+  ticket_types?: TicketType[];
   promotions?: Promotion[];
-  image?: string; // Was imageUrl
+  image?: string;
   is_free: boolean;
+  average_rating?: number;
+  created_at?: string;
+  updated_at?: string;
+  _count?: {
+    reviews?: number;
+    transactions?: number;
+  };
 }
 
 export interface LoginResponse {

@@ -52,10 +52,10 @@ const DashboardPage: React.FC = () => {
     fetchEvents();
   }, [currentPage]);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this event?")) return;
     try {
-      await deleteEvent(String(id));
+      await deleteEvent(id);
       setEvents(events.filter((e) => e.id !== id));
     } catch (error) {
       console.error("Failed to delete event", error);
@@ -177,7 +177,9 @@ const DashboardPage: React.FC = () => {
                       <td>
                         <div className="font-bold">{event.name}</div>
                         <div className="text-sm opacity-50">
-                          {event.category}
+                          {typeof event.category === "object"
+                            ? event.category?.name
+                            : event.category}
                         </div>
                       </td>
                       <td>

@@ -8,7 +8,9 @@ import api from "../services/api";
 const EditEventPage: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    [],
+  );
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState("");
@@ -16,7 +18,7 @@ const EditEventPage: React.FC = () => {
   const validationSchema = Yup.object({
     name: Yup.string().required("Event name is required"),
     description: Yup.string().required("Description is required"),
-    category: Yup.string().required("Category is required"),
+    category_id: Yup.string().required("Category is required"),
     city: Yup.string().required("City is required"),
     province: Yup.string().required("Province is required"),
     start_date: Yup.string().required("Start date is required"),
@@ -34,7 +36,7 @@ const EditEventPage: React.FC = () => {
     initialValues: {
       name: "",
       description: "",
-      category: "",
+      category_id: "",
       city: "",
       province: "",
       start_date: "",
@@ -70,8 +72,8 @@ const EditEventPage: React.FC = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await api.get("/events/meta/categories");
-        setCategories(response.data.data || []);
+        const response = await api.get("/categories");
+        setCategories(response.data.data || response.data || []);
       } catch (err) {
         console.error("Failed to load categories", err);
       }
@@ -92,7 +94,10 @@ const EditEventPage: React.FC = () => {
         formik.setValues({
           name: event.name || "",
           description: event.description || "",
-          category: event.category || "",
+          category_id:
+            typeof event.category === "object"
+              ? event.category?.id
+              : event.category_id || "",
           city: event.city || "",
           province: event.province || "",
           start_date: event.start_date ? formatDate(event.start_date) : "",
@@ -168,25 +173,25 @@ const EditEventPage: React.FC = () => {
           <div className="form-control">
             <label className="label">Category</label>
             <select
-              name="category"
+              name="category_id"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              value={formik.values.category}
+              value={formik.values.category_id}
               className="select select-bordered"
             >
               <option value="">Select Category</option>
               {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
                 </option>
               ))}
               <option value="Music">Music</option>
               <option value="Tech">Tech</option>
               <option value="Workshop">Workshop</option>
             </select>
-            {formik.touched.category && formik.errors.category && (
+            {formik.touched.category_id && formik.errors.category_id && (
               <div className="text-error text-xs mt-1">
-                {formik.errors.category}
+                {formik.errors.category_id}
               </div>
             )}
           </div>

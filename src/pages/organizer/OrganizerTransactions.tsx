@@ -31,11 +31,9 @@ const OrganizerTransactions: React.FC = () => {
         status: status || undefined,
       });
 
-      if (Array.isArray(response)) {
-        setTransactions(response);
-      } else if (response && Array.isArray((response as any).data)) {
-        setTransactions((response as any).data);
-        setTotalPages((response as any).totalPages);
+      if (response && response.data) {
+        setTransactions(response.data);
+        setTotalPages(response.meta?.totalPages || 1);
       }
     } catch (error) {
       console.error("Failed to load transactions", error);
