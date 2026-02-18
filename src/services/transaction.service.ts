@@ -26,9 +26,7 @@ export const getMyTransactions = async (
   params: GetTransactionsParams,
 ): Promise<{
   data: Transaction[];
-  total: number;
-  page: number;
-  totalPages: number;
+  meta: { page: number; limit: number; total: number; totalPages: number };
 }> => {
   const response = await api.get("/transactions/me", { params });
   return response.data;
@@ -72,9 +70,7 @@ export const getOrganizerTransactions = async (
   params: OrganizerTransactionParams,
 ): Promise<{
   data: Transaction[];
-  total: number;
-  page: number;
-  totalPages: number;
+  meta: { page: number; limit: number; total: number; totalPages: number };
 }> => {
   const response = await api.get("/transactions/organizer/list", { params });
   return response.data;

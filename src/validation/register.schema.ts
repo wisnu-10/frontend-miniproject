@@ -3,6 +3,7 @@ import * as Yup from "yup";
 export const registerSchema = Yup.object({
   full_name: Yup.string()
     .min(3, "Full name must be at least 3 characters")
+    .max(100, "Full name must be at most 100 characters")
     .required("Full name is required"),
   email: Yup.string()
     .email("Invalid email address")
@@ -10,6 +11,7 @@ export const registerSchema = Yup.object({
   phone_number: Yup.string().optional(),
   password: Yup.string()
     .min(6, "Password must be at least 6 characters")
+    .max(50, "Password must be at most 50 characters")
     .required("Password is required"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords do not match")
