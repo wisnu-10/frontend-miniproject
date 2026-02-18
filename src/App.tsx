@@ -7,11 +7,14 @@ import RegisterPage from "./pages/RegisterPage";
 import EventDetailsPage from "./pages/EventDetailsPage";
 import DashboardPage from "./pages/DashboardPage";
 import CreateEventPage from "./pages/CreateEventPage";
+import EditEventPage from "./pages/EditEventPage";
 import CreatePromotionPage from "./pages/CreatePromotionPage";
 import CheckoutPage from "./pages/checkout/CheckoutPage";
 import TransactionDetailPage from "./pages/transactions/TransactionDetailPage";
 import TransactionListPage from "./pages/transactions/TransactionListPage";
 import OrganizerTransactions from "./pages/organizer/OrganizerTransactions";
+import StatisticsPage from "./pages/organizer/StatisticsPage";
+import EventAttendeesPage from "./pages/organizer/EventAttendeesPage";
 import ProfilePage from "./pages/ProfilePage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
@@ -40,7 +43,10 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/events/:id" element={<EventDetailsPage />} />
-          <Route path="/organizers/:organizerId" element={<OrganizerProfilePage />} />
+          <Route
+            path="/organizers/:organizerId"
+            element={<OrganizerProfilePage />}
+          />
 
           {/* Protected Routes (both roles) */}
           <Route
@@ -71,9 +77,18 @@ function App() {
               path="/organizer/transactions"
               element={<OrganizerTransactions />}
             />
+            <Route path="/organizer/statistics" element={<StatisticsPage />} />
             <Route
               path="/organizer/create-event"
               element={<CreateEventPage />}
+            />
+            <Route
+              path="/organizer/events/:eventId/edit"
+              element={<EditEventPage />}
+            />
+            <Route
+              path="/organizer/events/:eventId/attendees"
+              element={<EventAttendeesPage />}
             />
             <Route
               path="/organizer/events/:eventId/create-promotion"

@@ -86,6 +86,12 @@ const Navbar: React.FC = () => {
                     <Link to="/organizer/dashboard">Dashboard</Link>
                   </li>
                   <li>
+                    <Link to="/organizer/transactions">Transactions</Link>
+                  </li>
+                  <li>
+                    <Link to="/organizer/statistics">Statistics</Link>
+                  </li>
+                  <li>
                     <Link to="/organizer/create-event">Create Event</Link>
                   </li>
                 </>
