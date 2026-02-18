@@ -8,7 +8,7 @@ EventHype is a modern event discovery and management platform. This repository c
 - **Browse Events**: View a list of upcoming events with infinite scroll/pagination support.
 - **Search**: Real-time search by event name.
 - **Filtering**: Filter events by category, location (city), price range, and free/paid status.
-- **Event Details**: comprehensive view of event information, including description, date/time, location, and ticket availability.
+- **Event Details**: Comprehensive view of event information, including description, date/time, location, ticket availability, and user reviews.
 
 ### 💳 Functionality: Transactions
 - **Checkout**: Seamless booking flow for purchasing event tickets (Customer Only).
@@ -27,6 +27,12 @@ EventHype is a modern event discovery and management platform. This repository c
 - **Promotions**: Create discount vouchers for events.
 - **Transaction Management**: View all transactions for owned events and accept/reject them with ease.
 - **Management**: Edit and delete events.
+
+### ⭐ Event Reviews & Ratings
+- **Submit Reviews**: Customers can leave a rating (1–5 stars) and comment after attending an event (eligibility-gated).
+- **Event Reviews**: View paginated reviews with sorting by date or rating on any event detail page.
+- **Organizer Profile**: Public profile page (`/organizers/:organizerId`) showing organizer info, aggregate rating stats with distribution bar chart, and recent reviews.
+- **My Reviews**: Customer-only page (`/my-reviews`) to view, edit, and delete their own reviews.
 
 ### 🔐 Authentication
 - **Secure Login/Register**: User authentication using JWT and HttpOnly cookies.
@@ -73,13 +79,14 @@ EventHype is a modern event discovery and management platform. This repository c
 ### Key Components Structure
 
 - `src/components`: Reusable UI components (Navbar, EventCard, FilterSidebar).
-- `src/pages`: Page components corresponding to routes (HomePage, EventDetailsPage, CreateEventPage).
+- `src/pages`: Page components corresponding to routes (HomePage, EventDetailsPage, CreateEventPage, OrganizerProfilePage, MyReviewsPage).
     - `src/pages/checkout`: Checkout flow components.
     - `src/pages/transactions`: Transaction history and detail pages.
     - `src/pages/organizer`: Organizer-specific dashboards and forms.
-- `src/services`: API integration logic (`api.ts`, `transaction.service.ts`).
+- `src/services`: API integration logic (`api.ts`, `transaction.service.ts`, `review.service.ts`).
 - `src/store`: Global state management (`useAuthStore.ts`).
-- `src/types`: TypeScript interfaces and types.
+- `src/types`: TypeScript interfaces and types (`index.ts`, `transaction.ts`, `review.ts`).
+- `src/validation`: Yup validation schemas (`login`, `register`, `profile`, `password`, `review`).
 - `src/hooks`: Custom hooks (`useDebounce.ts`).
 
 ## API Integration

@@ -9,3 +9,4 @@ export {
   resetPasswordSchema,
   type ResetPasswordValues,
 } from "./password.schema";
+export { reviewSchema, type ReviewValues } from "./review.schema";
