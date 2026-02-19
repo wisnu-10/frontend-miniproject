@@ -23,7 +23,7 @@ EventHype is a modern event discovery and management platform. This repository c
 
 ### 🔧 Organizer Dashboard
 - **Dashboard**: View a list of created events.
-- **Create Event**: Comprehensive form to publish new events with multiple ticket types.
+- **Create Event**: Comprehensive form to publish new events with multiple ticket types. Categories are dynamically loaded from the backend API. Includes a **Free Event** checkbox that, when checked, hides the base price and ticket types/pricing sections and automatically sets all prices to zero.
 - **Promotions**: Create discount vouchers for events.
 - **Transaction Management**: View all transactions for owned events and accept/reject them with ease.
 - **Management**: Edit and delete events.
