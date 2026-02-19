@@ -6,14 +6,14 @@ import api from '../services/api';
 
 const CreateEventPage: React.FC = () => {
     const navigate = useNavigate();
-    const [categories, setCategories] = useState<string[]>([]);
+    const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await api.get('/events/meta/categories');
+                const response = await api.get('/categories');
                 setCategories(response.data.data);
             } catch (err) {
                 console.error("Failed to load categories", err);
@@ -25,28 +25,37 @@ const CreateEventPage: React.FC = () => {
     const validationSchema = Yup.object({
         name: Yup.string().required('Event name is required'),
         description: Yup.string().required('Description is required'),
-        category: Yup.string().required('Category is required'),
+        category_id: Yup.string().required('Category is required'),
         city: Yup.string().required('City is required'),
         province: Yup.string().required('Province is required'),
         start_date: Yup.date().required('Start date is required'),
         end_date: Yup.date().required('End date is required').min(Yup.ref('start_date'), 'End date must be after start date'),
-        base_price: Yup.number().min(0, 'Price cannot be negative').required('Base price is required'),
+        base_price: Yup.number().min(0, 'Price cannot be negative').when('is_free', {
+            is: false,
+            then: (schema) => schema.required('Base price is required'),
+            otherwise: (schema) => schema.notRequired(),
+        }),
         total_seats: Yup.number().min(1, 'Total seats must be at least 1').required('Total seats is required'),
         image: Yup.string().url('Must be a valid URL'),
-        ticket_types: Yup.array().of(
-            Yup.object({
-                name: Yup.string().required('Ticket name is required'),
-                price: Yup.number().min(0, 'Price cannot be negative').required('Price is required'),
-                quantity: Yup.number().min(1, 'Quantity must be at least 1').required('Quantity is required'),
-            })
-        )
+        is_free: Yup.boolean(),
+        ticket_types: Yup.array().when('is_free', {
+            is: false,
+            then: (schema) => schema.of(
+                Yup.object({
+                    name: Yup.string().required('Ticket name is required'),
+                    price: Yup.number().min(0, 'Price cannot be negative').required('Price is required'),
+                    quantity: Yup.number().min(1, 'Quantity must be at least 1').required('Quantity is required'),
+                })
+            ),
+            otherwise: (schema) => schema.notRequired(),
+        })
     });
 
     const formik = useFormik({
         initialValues: {
             name: '',
             description: '',
-            category: '',
+            category_id: '',
             city: '',
             province: '',
             start_date: '',
@@ -62,7 +71,12 @@ const CreateEventPage: React.FC = () => {
             setLoading(true);
             setError('');
             try {
-                await api.post('/events', values);
+                const submitValues = { ...values };
+                if (submitValues.is_free) {
+                    submitValues.base_price = 0;
+                    submitValues.ticket_types = submitValues.ticket_types.map(t => ({ ...t, price: 0 }));
+                }
+                await api.post('/events', submitValues);
                 navigate('/organizer/dashboard');
             } catch (err: any) {
                 console.error("Failed to create event", err);
@@ -91,14 +105,11 @@ const CreateEventPage: React.FC = () => {
 
                     <div className="form-control">
                         <label className="label">Category</label>
-                        <select name="category" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.category} className="select select-bordered">
+                        <select name="category_id" onChange={formik.handleChange} onBlur={formik.handleBlur} value={formik.values.category_id} className="select select-bordered">
                             <option value="">Select Category</option>
-                            {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                            <option value="Music">Music</option>
-                            <option value="Tech">Tech</option>
-                            <option value="Workshop">Workshop</option>
+                            {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                         </select>
-                        {formik.touched.category && formik.errors.category && <div className="text-error text-xs mt-1">{formik.errors.category}</div>}
+                        {formik.touched.category_id && formik.errors.category_id && <div className="text-error text-xs mt-1">{formik.errors.category_id}</div>}
                     </div>
 
                     <div className="form-control">
@@ -125,11 +136,13 @@ const CreateEventPage: React.FC = () => {
                         {formik.touched.end_date && formik.errors.end_date && <div className="text-error text-xs mt-1">{formik.errors.end_date}</div>}
                     </div>
 
-                    <div className="form-control">
-                        <label className="label">Base Price</label>
-                        <input type="number" name="base_price" onChange={formik.handleChange} value={formik.values.base_price} className="input input-bordered" />
-                        {formik.touched.base_price && formik.errors.base_price && <div className="text-error text-xs mt-1">{formik.errors.base_price}</div>}
-                    </div>
+                    {!formik.values.is_free && (
+                        <div className="form-control">
+                            <label className="label">Base Price</label>
+                            <input type="number" name="base_price" onChange={formik.handleChange} value={formik.values.base_price} className="input input-bordered" />
+                            {formik.touched.base_price && formik.errors.base_price && <div className="text-error text-xs mt-1">{formik.errors.base_price}</div>}
+                        </div>
+                    )}
 
                     <div className="form-control">
                         <label className="label">Total Seats</label>
@@ -150,61 +163,87 @@ const CreateEventPage: React.FC = () => {
                     {formik.touched.image && formik.errors.image && <div className="text-error text-xs mt-1">{formik.errors.image}</div>}
                 </div>
 
-                {/* Ticket Types FieldArray */}
-                <div className="divider text-xl font-bold mt-8">Ticket Types</div>
+                {/* Free Event Checkbox */}
+                <div className="form-control mt-4">
+                    <label className="label cursor-pointer justify-start gap-3">
+                        <input
+                            type="checkbox"
+                            name="is_free"
+                            checked={formik.values.is_free}
+                            onChange={(e) => {
+                                formik.setFieldValue('is_free', e.target.checked);
+                                if (e.target.checked) {
+                                    formik.setFieldValue('base_price', 0);
+                                    formik.values.ticket_types.forEach((_, index) => {
+                                        formik.setFieldValue(`ticket_types.${index}.price`, 0);
+                                    });
+                                }
+                            }}
+                            className="checkbox checkbox-primary"
+                        />
+                        <span className="label-text text-lg font-semibold">Free Event</span>
+                    </label>
+                </div>
 
-                <FormikProvider value={formik}>
-                    <FieldArray
-                        name="ticket_types"
-                        render={(arrayHelpers) => (
-                            <div>
-                                {formik.values.ticket_types.map((ticket, index) => (
-                                    <div key={index} className="flex flex-col md:flex-row gap-4 mb-4 border p-4 rounded-lg bg-base-200">
-                                        <div className="form-control w-full">
-                                            <label className="label">Ticket Name</label>
-                                            <input
-                                                name={`ticket_types.${index}.name`}
-                                                value={ticket.name}
-                                                onChange={formik.handleChange}
-                                                className="input input-bordered input-sm"
-                                            />
-                                        </div>
-                                        <div className="form-control w-full">
-                                            <label className="label">Price</label>
-                                            <input
-                                                type="number"
-                                                name={`ticket_types.${index}.price`}
-                                                value={ticket.price}
-                                                onChange={formik.handleChange}
-                                                className="input input-bordered input-sm"
-                                            />
-                                        </div>
-                                        <div className="form-control w-full">
-                                            <label className="label">Quantity</label>
-                                            <input
-                                                type="number"
-                                                name={`ticket_types.${index}.quantity`}
-                                                value={ticket.quantity}
-                                                onChange={formik.handleChange}
-                                                className="input input-bordered input-sm"
-                                            />
-                                        </div>
-                                        <div className="flex items-end">
-                                            <button type="button" className="btn btn-error btn-sm" onClick={() => arrayHelpers.remove(index)}>Remove</button>
-                                        </div>
+                {/* Ticket Types FieldArray - hidden when free */}
+                {!formik.values.is_free && (
+                    <>
+                        <div className="divider text-xl font-bold mt-8">Ticket Types</div>
+
+                        <FormikProvider value={formik}>
+                            <FieldArray
+                                name="ticket_types"
+                                render={(arrayHelpers) => (
+                                    <div>
+                                        {formik.values.ticket_types.map((ticket, index) => (
+                                            <div key={index} className="flex flex-col md:flex-row gap-4 mb-4 border p-4 rounded-lg bg-base-200">
+                                                <div className="form-control w-full">
+                                                    <label className="label">Ticket Name</label>
+                                                    <input
+                                                        name={`ticket_types.${index}.name`}
+                                                        value={ticket.name}
+                                                        onChange={formik.handleChange}
+                                                        className="input input-bordered input-sm"
+                                                    />
+                                                </div>
+                                                <div className="form-control w-full">
+                                                    <label className="label">Price</label>
+                                                    <input
+                                                        type="number"
+                                                        name={`ticket_types.${index}.price`}
+                                                        value={ticket.price}
+                                                        onChange={formik.handleChange}
+                                                        className="input input-bordered input-sm"
+                                                    />
+                                                </div>
+                                                <div className="form-control w-full">
+                                                    <label className="label">Quantity</label>
+                                                    <input
+                                                        type="number"
+                                                        name={`ticket_types.${index}.quantity`}
+                                                        value={ticket.quantity}
+                                                        onChange={formik.handleChange}
+                                                        className="input input-bordered input-sm"
+                                                    />
+                                                </div>
+                                                <div className="flex items-end">
+                                                    <button type="button" className="btn btn-error btn-sm" onClick={() => arrayHelpers.remove(index)}>Remove</button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        <button
+                                            type="button"
+                                            className="btn btn-outline btn-sm"
+                                            onClick={() => arrayHelpers.push({ name: '', price: 0, quantity: 10 })}
+                                        >
+                                            Add Ticket Type
+                                        </button>
                                     </div>
-                                ))}
-                                <button
-                                    type="button"
-                                    className="btn btn-outline btn-sm"
-                                    onClick={() => arrayHelpers.push({ name: '', price: 0, quantity: 10 })}
-                                >
-                                    Add Ticket Type
-                                </button>
-                            </div>
-                        )}
-                    />
-                </FormikProvider>
+                                )}
+                            />
+                        </FormikProvider>
+                    </>
+                )}
 
                 <div className="mt-8 flex justify-end">
                     <button type="submit" className={`btn btn-primary ${loading ? 'loading' : ''}`} disabled={loading}>
