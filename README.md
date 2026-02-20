@@ -5,7 +5,7 @@ EventHype is a modern event discovery and management platform. This repository c
 ## Features
 
 ### 🛒 Event Discovery
-- **Browse Events**: View a list of upcoming events with infinite scroll/pagination support.
+- **Browse Events**: View a paginated list of upcoming events (9 per page) with page navigation controls and a "Showing X–Y of Z events" result summary. Page resets to 1 when filters or search terms change.
 - **Search**: Real-time search by event name.
 - **Filtering**: Filter events by category, location (city), price range, and free/paid status. Categories are dynamically loaded from `GET /categories` (sent as `category_id` query param) and locations from `GET /events/meta/locations` (displayed as `City, Province`).
 - **Event Details**: Comprehensive view of event information, including description, date/time, location, ticket availability, and user reviews.
@@ -78,7 +78,7 @@ EventHype is a modern event discovery and management platform. This repository c
 
 ### Key Components Structure
 
-- `src/components`: Reusable UI components (Navbar, EventCard, FilterSidebar).
+- `src/components`: Reusable UI components (Navbar, EventCard, FilterSidebar, Pagination).
 - `src/pages`: Page components corresponding to routes (HomePage, EventDetailsPage, CreateEventPage, OrganizerProfilePage, MyReviewsPage).
     - `src/pages/checkout`: Checkout flow components.
     - `src/pages/transactions`: Transaction history and detail pages.

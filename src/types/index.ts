@@ -76,3 +76,10 @@ export interface RegisterResponse {
   message: string;
   user: User;
 }
+
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}

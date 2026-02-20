@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import api from "../services/api";
-import type { Event } from "../types";
+import type { Event, PaginationMeta } from "../types";
 import FilterSidebar from "../components/FilterSidebar";
+import Pagination from "../components/Pagination";
+
+const EVENTS_PER_PAGE = 9;
 
 const HomePage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get("search") || "";
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [meta, setMeta] = useState<PaginationMeta | null>(null);
 
   // Local filter state.
   const [filters, setFilters] = useState({
@@ -19,11 +26,18 @@ const HomePage: React.FC = () => {
     maxPrice: "",
   });
 
+  // Reset to page 1 when filters or search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filters]);
+
   useEffect(() => {
     const fetchEvents = async () => {
       setLoading(true);
       try {
         const params: any = {
+          page: currentPage,
+          limit: EVENTS_PER_PAGE,
           search: searchTerm,
           category_id: filters.category || undefined,
           city: filters.location || undefined,
@@ -34,16 +48,22 @@ const HomePage: React.FC = () => {
 
         const response = await api.get("/events", { params });
         setEvents(response.data.data);
+        setMeta(response.data.meta);
       } catch (error) {
         console.error("Failed to fetch events:", error);
         setEvents([]);
+        setMeta(null);
       } finally {
         setLoading(false);
       }
     };
 
     fetchEvents();
-  }, [searchTerm, filters]);
+  }, [searchTerm, filters, currentPage]);
+
+  // Calculate display range
+  const startItem = meta ? (meta.page - 1) * meta.limit + 1 : 0;
+  const endItem = meta ? Math.min(meta.page * meta.limit, meta.total) : 0;
 
   return (
     <div className="container mx-auto p-4 flex flex-col md:flex-row gap-6">
@@ -66,60 +86,78 @@ const HomePage: React.FC = () => {
             <span className="loading loading-spinner loading-lg"></span>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {events.length > 0 ? (
-              events.map((event) => (
-                <div
-                  key={event.id}
-                  className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300"
-                >
-                  <figure>
-                    <img
-                      src={event.image || "https://placehold.co/600x400"}
-                      alt={event.name}
-                      className="h-48 w-full object-cover"
-                    />
-                  </figure>
-                  <div className="card-body">
-                    <h2 className="card-title text-base">{event.name}</h2>
-                    <div className="badge badge-secondary badge-outline text-xs">
-                      {typeof event.category === "object"
-                        ? event.category?.name
-                        : event.category}
-                    </div>
-                    <div className="text-xs text-gray-500 flex gap-1 items-center">
-                      <span>{event.city}</span>,{" "}
-                      <span>
-                        {new Date(event.start_date).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <p className="line-clamp-2 text-sm text-gray-500">
-                      {event.description}
-                    </p>
-                    <div className="card-actions justify-between mt-4 items-center">
-                      <div className="text-lg font-bold text-primary">
-                        {event.base_price > 0
-                          ? `Rp ${event.base_price.toLocaleString()}`
-                          : "Free"}
-                      </div>
-                      <Link
-                        to={`/events/${event.id}`}
-                        className="btn btn-primary btn-sm"
-                      >
-                        Details
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-10">
-                <h3 className="text-xl font-semibold">
-                  No events found matching your criteria.
-                </h3>
+          <>
+            {/* Results summary */}
+            {meta && meta.total > 0 && (
+              <div className="text-sm text-gray-500 mb-4">
+                Showing {startItem}–{endItem} of {meta.total} events
               </div>
             )}
-          </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              {events.length > 0 ? (
+                events.map((event) => (
+                  <div
+                    key={event.id}
+                    className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300"
+                  >
+                    <figure>
+                      <img
+                        src={event.image || "https://placehold.co/600x400"}
+                        alt={event.name}
+                        className="h-48 w-full object-cover"
+                      />
+                    </figure>
+                    <div className="card-body">
+                      <h2 className="card-title text-base">{event.name}</h2>
+                      <div className="badge badge-secondary badge-outline text-xs">
+                        {typeof event.category === "object"
+                          ? event.category?.name
+                          : event.category}
+                      </div>
+                      <div className="text-xs text-gray-500 flex gap-1 items-center">
+                        <span>{event.city}</span>,{" "}
+                        <span>
+                          {new Date(event.start_date).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <p className="line-clamp-2 text-sm text-gray-500">
+                        {event.description}
+                      </p>
+                      <div className="card-actions justify-between mt-4 items-center">
+                        <div className="text-lg font-bold text-primary">
+                          {event.base_price > 0
+                            ? `Rp ${event.base_price.toLocaleString()}`
+                            : "Free"}
+                        </div>
+                        <Link
+                          to={`/events/${event.id}`}
+                          className="btn btn-primary btn-sm"
+                        >
+                          Details
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-10">
+                  <h3 className="text-xl font-semibold">
+                    No events found matching your criteria.
+                  </h3>
+                </div>
+              )}
+            </div>
+
+            {/* Pagination */}
+            {meta && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={meta.totalPages}
+                onPageChange={setCurrentPage}
+              />
+            )}
+          </>
         )}
       </div>
     </div>
