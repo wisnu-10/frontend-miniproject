@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 
+interface Category {
+    id: string;
+    name: string;
+}
+
+interface Location {
+    city: string | null;
+    province: string | null;
+}
+
 interface FilterSidebarProps {
     filters: {
         category: string;
@@ -19,14 +29,14 @@ interface FilterSidebarProps {
 }
 
 const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, setFilters }) => {
-    const [categories, setCategories] = useState<string[]>([]);
-    const [locations, setLocations] = useState<string[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [locations, setLocations] = useState<Location[]>([]);
 
     useEffect(() => {
         const fetchMetadata = async () => {
             try {
                 const [catRes, locRes] = await Promise.all([
-                    api.get('/events/meta/categories'),
+                    api.get('/categories'),
                     api.get('/events/meta/locations')
                 ]);
                 setCategories(catRes.data.data);
@@ -63,7 +73,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, setFilters }) =>
                 </label>
                 <select name="category" className="select select-bordered" value={filters.category} onChange={handleChange}>
                     <option value="">All Categories</option>
-                    {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                    {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                 </select>
             </div>
 
@@ -73,7 +83,11 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, setFilters }) =>
                 </label>
                 <select name="location" className="select select-bordered" value={filters.location} onChange={handleChange}>
                     <option value="">All Locations</option>
-                    {locations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+                    {locations.map(loc => (
+                        <option key={`${loc.city}-${loc.province}`} value={loc.city || ''}>
+                            {loc.city}{loc.province ? `, ${loc.province}` : ''}
+                        </option>
+                    ))}
                 </select>
             </div>
 
