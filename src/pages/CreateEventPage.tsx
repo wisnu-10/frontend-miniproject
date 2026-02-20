@@ -9,6 +9,8 @@ const CreateEventPage: React.FC = () => {
     const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string>('');
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -21,6 +23,18 @@ const CreateEventPage: React.FC = () => {
         };
         fetchCategories();
     }, []);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setImageFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const validationSchema = Yup.object({
         name: Yup.string().required('Event name is required'),
@@ -36,7 +50,6 @@ const CreateEventPage: React.FC = () => {
             otherwise: (schema) => schema.notRequired(),
         }),
         total_seats: Yup.number().min(1, 'Total seats must be at least 1').required('Total seats is required'),
-        image: Yup.string().url('Must be a valid URL'),
         is_free: Yup.boolean(),
         ticket_types: Yup.array().when('is_free', {
             is: false,
@@ -62,7 +75,6 @@ const CreateEventPage: React.FC = () => {
             end_date: '',
             base_price: 0,
             total_seats: 100, // Default
-            image: '',
             is_free: false,
             ticket_types: [{ name: 'Regular', price: 0, quantity: 100 }]
         },
@@ -76,7 +88,28 @@ const CreateEventPage: React.FC = () => {
                     submitValues.base_price = 0;
                     submitValues.ticket_types = submitValues.ticket_types.map(t => ({ ...t, price: 0 }));
                 }
-                await api.post('/events', submitValues);
+
+                // Build FormData for multipart/form-data upload
+                const formData = new FormData();
+                formData.append('name', submitValues.name);
+                formData.append('description', submitValues.description);
+                formData.append('category_id', submitValues.category_id);
+                formData.append('city', submitValues.city);
+                formData.append('province', submitValues.province);
+                formData.append('start_date', submitValues.start_date);
+                formData.append('end_date', submitValues.end_date);
+                formData.append('base_price', String(submitValues.base_price));
+                formData.append('total_seats', String(submitValues.total_seats));
+                formData.append('is_free', String(submitValues.is_free));
+                formData.append('ticket_types', JSON.stringify(submitValues.ticket_types));
+
+                if (imageFile) {
+                    formData.append('image', imageFile);
+                }
+
+                await api.post('/events', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
                 navigate('/organizer/dashboard');
             } catch (err: any) {
                 console.error("Failed to create event", err);
@@ -157,10 +190,32 @@ const CreateEventPage: React.FC = () => {
                     {formik.touched.description && formik.errors.description && <div className="text-error text-xs mt-1">{formik.errors.description}</div>}
                 </div>
 
+                {/* Image Upload */}
                 <div className="form-control mt-4">
-                    <label className="label">Image URL</label>
-                    <input type="text" name="image" onChange={formik.handleChange} value={formik.values.image} className="input input-bordered" placeholder="https://example.com/image.jpg" />
-                    {formik.touched.image && formik.errors.image && <div className="text-error text-xs mt-1">{formik.errors.image}</div>}
+                    <label className="label">Event Image</label>
+                    <input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                        onChange={handleImageChange}
+                        className="file-input file-input-bordered w-full"
+                    />
+                    <p className="text-xs text-base-content/60 mt-1">Max 2MB. Accepted: JPEG, PNG, WebP</p>
+                    {imagePreview && (
+                        <div className="mt-3">
+                            <img
+                                src={imagePreview}
+                                alt="Preview"
+                                className="w-full max-h-48 object-cover rounded-lg border"
+                            />
+                            <button
+                                type="button"
+                                className="btn btn-xs btn-ghost text-error mt-1"
+                                onClick={() => { setImageFile(null); setImagePreview(''); }}
+                            >
+                                Remove image
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Free Event Checkbox */}
