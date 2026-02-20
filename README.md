@@ -7,7 +7,7 @@ EventHype is a modern event discovery and management platform. This repository c
 ### 🛒 Event Discovery
 - **Browse Events**: View a list of upcoming events with infinite scroll/pagination support.
 - **Search**: Real-time search by event name.
-- **Filtering**: Filter events by category, location (city), price range, and free/paid status.
+- **Filtering**: Filter events by category, location (city), price range, and free/paid status. Categories are dynamically loaded from `GET /categories` (sent as `category_id` query param) and locations from `GET /events/meta/locations` (displayed as `City, Province`).
 - **Event Details**: Comprehensive view of event information, including description, date/time, location, ticket availability, and user reviews.
 
 ### 💳 Functionality: Transactions

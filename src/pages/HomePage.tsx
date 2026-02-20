@@ -25,7 +25,7 @@ const HomePage: React.FC = () => {
       try {
         const params: any = {
           search: searchTerm,
-          category: filters.category || undefined,
+          category_id: filters.category || undefined,
           city: filters.location || undefined,
           is_free: filters.isFree ? "true" : undefined,
           min_price: filters.minPrice || undefined,
