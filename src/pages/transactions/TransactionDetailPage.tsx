@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { getTransactionById, uploadPaymentProof, cancelTransaction } from "../../services/transaction.service";
 import type { Transaction } from "../../types/transaction";
 import { TransactionStatus } from "../../types/transaction";
@@ -234,6 +234,24 @@ const TransactionDetailPage: React.FC = () => {
                     <div className="card-body">
                         <h3 className="card-title text-lg border-b pb-2">Payment Proof</h3>
                         <img src={transaction.payment_proof} alt="Payment Proof" className="max-w-md rounded-lg border" />
+                    </div>
+                </div>
+            )}
+
+            {/* Write a Review CTA for completed transactions */}
+            {transaction.status === TransactionStatus.DONE && transaction.event_id && (
+                <div className="card bg-base-100 shadow-md mt-6">
+                    <div className="card-body flex-row items-center justify-between">
+                        <div>
+                            <h3 className="font-bold text-lg">Enjoyed this event?</h3>
+                            <p className="text-sm text-gray-500">Share your experience by writing a review.</p>
+                        </div>
+                        <Link
+                            to={`/events/${transaction.event_id}/review`}
+                            className="btn btn-primary"
+                        >
+                            Write a Review
+                        </Link>
                     </div>
                 </div>
             )}

@@ -29,10 +29,11 @@ EventHype is a modern event discovery and management platform. This repository c
 - **Management**: Edit and delete events.
 
 ### ⭐ Event Reviews & Ratings
-- **Submit Reviews**: Customers can leave a rating (1–5 stars) and comment after attending an event (eligibility-gated).
+- **Write Review**: Dedicated review page (`/events/:eventId/review`) with eligibility check, event info display, interactive star picker with descriptive labels, and character counter. Shows clear messaging for ineligible users (not attended / already reviewed).
+- **Submit from Transactions**: Completed (`DONE`) transactions display a "Write a Review" call-to-action linking directly to the review page.
 - **Event Reviews**: View paginated reviews with sorting by date or rating on any event detail page.
 - **Organizer Profile**: Public profile page (`/organizers/:organizerId`) showing organizer info, aggregate rating stats with distribution bar chart, and recent reviews.
-- **My Reviews**: Customer-only page (`/my-reviews`) to view, edit, and delete their own reviews.
+- **My Reviews**: Customer-only page (`/my-reviews`) accessible from the navbar dropdown, to view, edit, and delete own reviews.
 
 ### 🔐 Authentication
 - **Secure Login/Register**: User authentication using JWT and HttpOnly cookies.
@@ -79,7 +80,7 @@ EventHype is a modern event discovery and management platform. This repository c
 ### Key Components Structure
 
 - `src/components`: Reusable UI components (Navbar, EventCard, FilterSidebar, Pagination).
-- `src/pages`: Page components corresponding to routes (HomePage, EventDetailsPage, CreateEventPage, OrganizerProfilePage, MyReviewsPage).
+- `src/pages`: Page components corresponding to routes (HomePage, EventDetailsPage, CreateEventPage, OrganizerProfilePage, MyReviewsPage, WriteReviewPage).
     - `src/pages/checkout`: Checkout flow components.
     - `src/pages/transactions`: Transaction history and detail pages.
     - `src/pages/organizer`: Organizer-specific dashboards and forms.
