@@ -30,13 +30,13 @@ const CheckoutPage: React.FC = () => {
             try {
                 const [eventRes, pointsRes, couponsRes] = await Promise.all([
                     api.get(`/events/${eventId}`),
-                    getMyPoints().catch(() => ({ total_points: 0, points: [] })),
+                    getMyPoints().catch(() => ({ total_balance: 0, points: [] })),
                     getMyCoupons().catch(() => [])
                 ]);
 
                 setEvent(eventRes.data.data);
                 // @ts-ignore
-                setPoints(pointsRes.total_points || 0);
+                setPoints(pointsRes.total_balance || 0);
                 // @ts-ignore
                 setCoupons(couponsRes || []);
             } catch (error) {
