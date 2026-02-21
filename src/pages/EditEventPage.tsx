@@ -103,7 +103,7 @@ const EditEventPage: React.FC = () => {
           start_date: event.start_date ? formatDate(event.start_date) : "",
           end_date: event.end_date ? formatDate(event.end_date) : "",
           base_price: event.base_price || 0,
-          total_seats: event.available_seats || 100,
+          total_seats: event.total_seats || 100,
           image: event.image || "",
           is_free: event.is_free || false,
           ticket_types:
