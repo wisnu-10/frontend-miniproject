@@ -56,11 +56,11 @@ function App() {
           >
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/change-password" element={<ChangePasswordPage />} />
-            <Route path="/my-rewards" element={<MyRewardsPage />} />
           </Route>
 
           {/* Customer Routes */}
           <Route element={<ProtectedRoute allowedRoles={["CUSTOMER"]} />}>
+            <Route path="/my-rewards" element={<MyRewardsPage />} />
             <Route path="/checkout/:eventId" element={<CheckoutPage />} />
             <Route path="/transactions" element={<TransactionListPage />} />
             <Route

@@ -77,9 +77,6 @@ const Navbar: React.FC = () => {
               <li>
                 <Link to="/profile">Profile</Link>
               </li>
-              <li>
-                <Link to="/my-rewards">My Rewards</Link>
-              </li>
               {user?.role === "ORGANIZER" && (
                 <>
                   <li>
@@ -97,9 +94,14 @@ const Navbar: React.FC = () => {
                 </>
               )}
               {user?.role === "CUSTOMER" && (
-                <li>
-                  <Link to="/transactions">My Transactions</Link>
-                </li>
+                <>
+                  <li>
+                    <Link to="/my-rewards">My Rewards</Link>
+                  </li>
+                  <li>
+                    <Link to="/transactions">My Transactions</Link>
+                  </li>
+                </>
               )}
               <div className="divider my-0"></div>
               <li>
