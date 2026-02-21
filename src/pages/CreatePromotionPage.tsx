@@ -47,7 +47,7 @@ const CreatePromotionPage: React.FC = () => {
                 }
 
                 await api.post(`/events/${eventId}/promotions`, payload);
-                navigate('/organizer/dashboard');
+                navigate(`/organizer/events/${eventId}/promotions`);
             } catch (err: any) {
                 console.error("Failed to create promotion", err);
                 setError(err.response?.data?.message || 'Failed to create promotion');

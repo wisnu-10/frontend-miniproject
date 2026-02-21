@@ -9,6 +9,8 @@ import DashboardPage from "./pages/DashboardPage";
 import CreateEventPage from "./pages/CreateEventPage";
 import EditEventPage from "./pages/EditEventPage";
 import CreatePromotionPage from "./pages/CreatePromotionPage";
+import ManagePromotionsPage from "./pages/ManagePromotionsPage";
+import EditPromotionPage from "./pages/EditPromotionPage";
 import CheckoutPage from "./pages/checkout/CheckoutPage";
 import TransactionDetailPage from "./pages/transactions/TransactionDetailPage";
 import TransactionListPage from "./pages/transactions/TransactionListPage";
@@ -93,6 +95,14 @@ function App() {
             <Route
               path="/organizer/events/:eventId/create-promotion"
               element={<CreatePromotionPage />}
+            />
+            <Route
+              path="/organizer/events/:eventId/promotions"
+              element={<ManagePromotionsPage />}
+            />
+            <Route
+              path="/organizer/events/:eventId/promotions/:promoId/edit"
+              element={<EditPromotionPage />}
             />
           </Route>
         </Routes>

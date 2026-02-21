@@ -24,7 +24,7 @@ EventHype is a modern event discovery and management platform. This repository c
 ### 🔧 Organizer Dashboard
 - **Dashboard**: View a list of created events.
 - **Create Event**: Comprehensive form to publish new events with multiple ticket types. Categories are dynamically loaded from the backend API. Supports **image upload** via Cloudinary (JPEG/PNG/WebP, max 2MB) with preview. Includes a **Free Event** checkbox that, when checked, hides the base price and ticket types/pricing sections and automatically sets all prices to zero. **Field syncing**: changing the base price automatically updates the default (first) ticket type's price; total seats is auto-calculated as the sum of all ticket type quantities (read-only for paid events, manually editable for free events).
-- **Promotions**: Create discount vouchers for events.
+- **Promotions**: Full promotion management — create, view all promotions in a table with status badges (Active/Expired/Maxed), edit discount details, and delete unused promotions. Delete is disabled for promotions that have already been used.
 - **Transaction Management**: View all transactions for owned events and accept/reject them with ease.
 - **Management**: Edit and delete events.
 
@@ -83,7 +83,7 @@ EventHype is a modern event discovery and management platform. This repository c
     - `src/pages/checkout`: Checkout flow components.
     - `src/pages/transactions`: Transaction history and detail pages.
     - `src/pages/organizer`: Organizer-specific dashboards and forms.
-- `src/services`: API integration logic (`api.ts`, `transaction.service.ts`, `review.service.ts`).
+- `src/services`: API integration logic (`api.ts`, `transaction.service.ts`, `review.service.ts`, `promotion.service.ts`).
 - `src/store`: Global state management (`useAuthStore.ts`).
 - `src/types`: TypeScript interfaces and types (`index.ts`, `transaction.ts`, `review.ts`).
 - `src/validation`: Yup validation schemas (`login`, `register`, `profile`, `password`, `review`).
