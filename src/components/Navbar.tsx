@@ -101,6 +101,9 @@ const Navbar: React.FC = () => {
                   <li>
                     <Link to="/transactions">My Transactions</Link>
                   </li>
+                  <li>
+                    <Link to="/my-reviews">My Reviews</Link>
+                  </li>
                 </>
               )}
               <div className="divider my-0"></div>

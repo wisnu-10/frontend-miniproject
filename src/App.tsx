@@ -24,6 +24,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import MyRewardsPage from "./pages/MyRewardsPage";
 import OrganizerProfilePage from "./pages/OrganizerProfilePage";
 import MyReviewsPage from "./pages/MyReviewsPage";
+import WriteReviewPage from "./pages/WriteReviewPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuthStore } from "./store/useAuthStore";
 
@@ -70,6 +71,7 @@ function App() {
               element={<TransactionDetailPage />}
             />
             <Route path="/my-reviews" element={<MyReviewsPage />} />
+            <Route path="/events/:eventId/review" element={<WriteReviewPage />} />
           </Route>
 
           {/* Organizer Routes */}
