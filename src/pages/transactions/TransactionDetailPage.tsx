@@ -105,13 +105,14 @@ const TransactionDetailPage: React.FC = () => {
                         <div>
                             <p className="text-gray-500">Status</p>
                             <span className={`badge badge-lg ${transaction.status === TransactionStatus.WAITING_PAYMENT ? 'badge-warning' :
+                                transaction.status === TransactionStatus.WAITING_CONFIRMATION ? 'badge-info' :
                                     transaction.status === TransactionStatus.DONE ? 'badge-success' :
                                         transaction.status === TransactionStatus.REJECTED ? 'badge-error' : 'badge-ghost'
                                 }`}>
                                 {transaction.status.replace("_", " ")}
                             </span>
                         </div>
-                        {transaction.status === TransactionStatus.WAITING_PAYMENT && (
+                        {transaction.status === TransactionStatus.WAITING_PAYMENT && transaction.final_amount > 0 && (
                             <div className="text-right">
                                 <p className="text-gray-500">Payment Deadline</p>
                                 <span className="font-mono text-2xl text-error font-bold">{formatTime(timeLeft)}</span>
@@ -142,6 +143,19 @@ const TransactionDetailPage: React.FC = () => {
                                 className="btn btn-outline btn-error btn-sm"
                                 onClick={handleCancel}
                             >Cancel Transaction</button>
+                        </div>
+                    )}
+
+                    {/* Free event - awaiting organizer confirmation */}
+                    {transaction.status === TransactionStatus.WAITING_CONFIRMATION && transaction.final_amount === 0 && (
+                        <div className="mt-6 border-t pt-4">
+                            <div role="alert" className="alert alert-info">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div>
+                                    <h3 className="font-bold">Free Event - No Payment Required</h3>
+                                    <p className="text-sm">Your ticket registration is awaiting confirmation from the organizer. You will be notified once it's approved.</p>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

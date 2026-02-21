@@ -302,9 +302,9 @@ const CheckoutPage: React.FC = () => {
                             <button
                                 className="btn btn-primary w-full mt-4"
                                 onClick={handleCheckout}
-                                disabled={subtotal === 0}
+                                disabled={Object.values(ticketQuantities).every(qty => qty === 0) || Object.keys(ticketQuantities).length === 0}
                             >
-                                Pay Now
+                                {finalTotal === 0 ? 'Get Free Tickets' : 'Pay Now'}
                             </button>
                         </div>
                     </div>
