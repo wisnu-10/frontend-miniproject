@@ -267,8 +267,8 @@ const ProfilePage: React.FC = () => {
               </div>
             </div>
 
-            {/* Referral Code */}
-            {profile.referral_code && (
+            {/* Referral Code (hidden for organizers) */}
+            {profile.referral_code && profile.role !== "ORGANIZER" && (
               <div className="form-control">
                 <label className="label">
                   <span className="label-text font-semibold">
