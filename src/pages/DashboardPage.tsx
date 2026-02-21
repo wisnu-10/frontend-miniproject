@@ -65,43 +65,43 @@ const DashboardPage: React.FC = () => {
 
   const statCards = overview
     ? [
-        {
-          label: "Total Events",
-          value: overview.total_events,
-          icon: <FaCalendarAlt />,
-          color: "text-primary",
-        },
-        {
-          label: "Total Revenue",
-          value: formatCurrency(overview.total_revenue),
-          icon: <FaMoneyBillWave />,
-          color: "text-success",
-        },
-        {
-          label: "Total Transactions",
-          value: overview.total_transactions,
-          icon: <FaReceipt />,
-          color: "text-info",
-        },
-        {
-          label: "Pending Confirmations",
-          value: overview.pending_confirmations,
-          icon: <FaClock />,
-          color: "text-warning",
-        },
-        {
-          label: "Upcoming Events",
-          value: overview.upcoming_events,
-          icon: <FaRocket />,
-          color: "text-secondary",
-        },
-        {
-          label: "Completed Transactions",
-          value: overview.completed_transactions,
-          icon: <FaCheckCircle />,
-          color: "text-accent",
-        },
-      ]
+      {
+        label: "Total Events",
+        value: overview.total_events,
+        icon: <FaCalendarAlt />,
+        color: "text-primary",
+      },
+      {
+        label: "Total Revenue",
+        value: formatCurrency(overview.total_revenue),
+        icon: <FaMoneyBillWave />,
+        color: "text-success",
+      },
+      {
+        label: "Total Transactions",
+        value: overview.total_transactions,
+        icon: <FaReceipt />,
+        color: "text-info",
+      },
+      {
+        label: "Pending Confirmations",
+        value: overview.pending_confirmations,
+        icon: <FaClock />,
+        color: "text-warning",
+      },
+      {
+        label: "Upcoming Events",
+        value: overview.upcoming_events,
+        icon: <FaRocket />,
+        color: "text-secondary",
+      },
+      {
+        label: "Completed Transactions",
+        value: overview.completed_transactions,
+        icon: <FaCheckCircle />,
+        color: "text-accent",
+      },
+    ]
     : [];
 
   return (
@@ -231,7 +231,7 @@ const DashboardPage: React.FC = () => {
                             Attendees
                           </Link>
                           <Link
-                            to={`/organizer/events/${event.id}/create-promotion`}
+                            to={`/organizer/events/${event.id}/promotions`}
                             className="btn btn-ghost btn-xs text-accent"
                           >
                             Promo
