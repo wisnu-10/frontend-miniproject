@@ -172,14 +172,27 @@ const CreateEventPage: React.FC = () => {
                     {!formik.values.is_free && (
                         <div className="form-control">
                             <label className="label">Base Price</label>
-                            <input type="number" name="base_price" onChange={formik.handleChange} value={formik.values.base_price} className="input input-bordered" />
+                            <input type="number" name="base_price" onChange={(e) => {
+                                formik.handleChange(e);
+                                const newPrice = Number(e.target.value);
+                                if (formik.values.ticket_types.length > 0) {
+                                    formik.setFieldValue('ticket_types.0.price', newPrice);
+                                }
+                            }} value={formik.values.base_price} className="input input-bordered" />
                             {formik.touched.base_price && formik.errors.base_price && <div className="text-error text-xs mt-1">{formik.errors.base_price}</div>}
                         </div>
                     )}
 
                     <div className="form-control">
-                        <label className="label">Total Seats</label>
-                        <input type="number" name="total_seats" onChange={formik.handleChange} value={formik.values.total_seats} className="input input-bordered" />
+                        <label className="label">Total Seats {!formik.values.is_free && <span className="text-xs text-base-content/60">(auto-calculated from ticket types)</span>}</label>
+                        <input
+                            type="number"
+                            name="total_seats"
+                            value={formik.values.total_seats}
+                            onChange={formik.values.is_free ? formik.handleChange : undefined}
+                            readOnly={!formik.values.is_free}
+                            className={`input input-bordered ${!formik.values.is_free ? 'bg-base-200 cursor-not-allowed' : ''}`}
+                        />
                         {formik.touched.total_seats && formik.errors.total_seats && <div className="text-error text-xs mt-1">{formik.errors.total_seats}</div>}
                     </div>
                 </div>
@@ -277,19 +290,36 @@ const CreateEventPage: React.FC = () => {
                                                         type="number"
                                                         name={`ticket_types.${index}.quantity`}
                                                         value={ticket.quantity}
-                                                        onChange={formik.handleChange}
+                                                        onChange={(e) => {
+                                                            formik.handleChange(e);
+                                                            const newQuantity = Number(e.target.value) || 0;
+                                                            const totalSeats = formik.values.ticket_types.reduce(
+                                                                (sum, t, i) => sum + (i === index ? newQuantity : t.quantity),
+                                                                0
+                                                            );
+                                                            formik.setFieldValue('total_seats', totalSeats);
+                                                        }}
                                                         className="input input-bordered input-sm"
                                                     />
                                                 </div>
                                                 <div className="flex items-end">
-                                                    <button type="button" className="btn btn-error btn-sm" onClick={() => arrayHelpers.remove(index)}>Remove</button>
+                                                    <button type="button" className="btn btn-error btn-sm" onClick={() => {
+                                                        arrayHelpers.remove(index);
+                                                        const totalSeats = formik.values.ticket_types
+                                                            .filter((_, i) => i !== index)
+                                                            .reduce((sum, t) => sum + t.quantity, 0);
+                                                        formik.setFieldValue('total_seats', totalSeats);
+                                                    }}>Remove</button>
                                                 </div>
                                             </div>
                                         ))}
                                         <button
                                             type="button"
                                             className="btn btn-outline btn-sm"
-                                            onClick={() => arrayHelpers.push({ name: '', price: 0, quantity: 10 })}
+                                            onClick={() => {
+                                                arrayHelpers.push({ name: '', price: 0, quantity: 10 });
+                                                formik.setFieldValue('total_seats', formik.values.total_seats + 10);
+                                            }}
                                         >
                                             Add Ticket Type
                                         </button>
