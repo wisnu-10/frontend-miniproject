@@ -15,7 +15,7 @@ EventHype is a modern event discovery and management platform. This repository c
 
 ### 💳 Functionality: Transactions
 - **Checkout**: Seamless booking flow for purchasing event tickets (Customer Only).
-- **Discounts**: Apply Promotions, Coupons, or Points to your purchase (exclusive selection).
+- **Discounts**: Apply Promotions, Coupons, or Points to your purchase (exclusive selection) with a compact, side-by-side UI for easy selection.
 - **Payment**: Upload payment proof for manual verification.
 - **History**: View past transactions with status tracking and filter options (Customer Only).
 - **Countdown**: Real-time timer for pending payments to ensure timely completion.
