@@ -132,6 +132,11 @@ const HomePage: React.FC = () => {
                       <h2 className="card-title text-lg font-bold leading-tight line-clamp-2 mt-1 group-hover:text-primary transition-colors">
                         {event.name}
                       </h2>
+                      {event.organizer && (
+                        <p className="text-xs text-base-content/60 mt-0.5">
+                          by <span className="font-medium text-base-content/80">{event.organizer.full_name}</span>
+                        </p>
+                      )}
                       <div className="text-xs font-medium text-base-content/60 flex items-center gap-1.5 mt-1">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
