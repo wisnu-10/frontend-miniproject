@@ -49,7 +49,7 @@ const HomePage: React.FC = () => {
         const response = await api.get("/events", { params });
         const now = new Date();
         const activeEvents = (response.data.data as Event[]).filter(
-          (event) => new Date(event.end_date) >= now
+          (event) => new Date(event.end_date) >= now,
         );
         setEvents(activeEvents);
         setMeta(response.data.meta);
@@ -77,66 +77,119 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="w-full md:w-3/4">
-        <div className="text-center md:text-left mb-8">
-          <h1 className="text-4xl font-bold mb-4">Discover Upcoming Events</h1>
-          <p className="text-lg text-gray-600">
-            Find the best events happening around you.
+      <div className="w-full md:w-3/4 flex flex-col gap-6">
+        <div className="bg-linear-to-br from-primary/10 to-base-100 rounded-3xl p-8 sm:p-12 text-center md:text-left shadow-sm border border-base-200/60 mb-4 transition-all duration-300">
+          <h1 className="text-4xl sm:text-5xl font-black mb-4 tracking-tight text-base-content leading-tight">
+            Discover <span className="text-primary">Upcoming</span> Events
+          </h1>
+          <p className="text-lg sm:text-xl text-base-content/70 max-w-2xl">
+            Find the best events happening around you. Get tickets for live
+            music, tech conferences, workshops, and more.
           </p>
         </div>
 
         {loading ? (
           <div className="flex justify-center my-20">
-            <span className="loading loading-spinner loading-lg"></span>
+            <span className="loading loading-spinner loading-lg text-primary"></span>
           </div>
         ) : (
           <>
             {/* Results summary */}
             {meta && meta.total > 0 && (
-              <div className="text-sm text-gray-500 mb-4">
-                Showing {startItem}–{endItem} of {meta.total} events
+              <div className="text-sm font-medium text-base-content/60 mb-2 flex items-center gap-2">
+                <div className="h-1.5 w-1.5 rounded-full bg-primary/60"></div>
+                Showing {startItem}–{endItem} of{" "}
+                <span className="text-base-content font-bold">
+                  {meta.total}
+                </span>{" "}
+                events
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 sm:gap-8">
               {events.length > 0 ? (
                 events.map((event) => (
                   <div
                     key={event.id}
-                    className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300"
+                    className="card bg-base-100 border border-base-200/60 card-hover-effect overflow-hidden cursor-pointer group"
                   >
-                    <figure>
+                    <figure className="relative overflow-hidden aspect-video">
+                      <div className="absolute inset-0 bg-linear-to-t from-base-300/40 to-transparent z-10"></div>
                       <img
                         src={event.image || "https://placehold.co/600x400"}
                         alt={event.name}
-                        className="h-48 w-full object-cover"
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     </figure>
-                    <div className="card-body">
-                      <h2 className="card-title text-base">{event.name}</h2>
-                      <div className="badge badge-secondary badge-outline text-xs">
-                        {typeof event.category === "object"
-                          ? event.category?.name
-                          : event.category}
+                    <div className="card-body p-5 gap-3">
+                      <div className="flexjustify-between items-start gap-2">
+                        <div className="badge badge-primary bg-primary/10 text-primary border-0 font-medium text-xs">
+                          {typeof event.category === "object"
+                            ? event.category?.name
+                            : event.category}
+                        </div>
                       </div>
-                      <div className="text-xs text-gray-500 flex gap-1 items-center">
-                        <span>{event.city}</span>,{" "}
+                      <h2 className="card-title text-lg font-bold leading-tight line-clamp-2 mt-1 group-hover:text-primary transition-colors">
+                        {event.name}
+                      </h2>
+                      <div className="text-xs font-medium text-base-content/60 flex items-center gap-1.5 mt-1">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-3.5 w-3.5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                        <span>{event.city}</span>
+                        <span className="mx-1">•</span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-3.5 w-3.5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
                         <span>
-                          {new Date(event.start_date).toLocaleDateString()}
+                          {new Date(event.start_date).toLocaleDateString(
+                            undefined,
+                            { month: "short", day: "numeric", year: "numeric" },
+                          )}
                         </span>
                       </div>
-                      <p className="line-clamp-2 text-sm text-gray-500">
-                        {event.description}
-                      </p>
-                      <div className="card-actions justify-between mt-4 items-center">
-                        <div className="text-lg font-bold text-primary">
-                          {event.base_price > 0
-                            ? `Rp ${event.base_price.toLocaleString()}`
-                            : "Free"}
+                      <div className="card-actions justify-between mt-auto pt-4 items-end border-t border-base-200/50">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] uppercase tracking-wider text-base-content/50 font-bold mb-0.5">
+                            Price starting from
+                          </span>
+                          <span className="text-lg font-black text-base-content tracking-tight">
+                            {event.base_price > 0
+                              ? `Rp ${event.base_price.toLocaleString()}`
+                              : "Free"}
+                          </span>
                         </div>
                         <Link
                           to={`/events/${event.id}`}
-                          className="btn btn-primary btn-sm"
+                          className="btn btn-primary btn-sm rounded-full font-semibold px-4"
                         >
                           Details
                         </Link>
@@ -145,21 +198,28 @@ const HomePage: React.FC = () => {
                   </div>
                 ))
               ) : (
-                <div className="col-span-full text-center py-10">
-                  <h3 className="text-xl font-semibold">
-                    No events found matching your criteria.
+                <div className="col-span-full text-center py-20 bg-base-200/30 rounded-3xl border border-base-200 border-dashed">
+                  <div className="text-6xl mb-4">🔍</div>
+                  <h3 className="text-xl font-bold text-base-content mb-2">
+                    No events found
                   </h3>
+                  <p className="text-base-content/60 max-w-md mx-auto">
+                    We couldn't find any events matching your current filters.
+                    Try adjusting your search criteria or removing some filters.
+                  </p>
                 </div>
               )}
             </div>
 
             {/* Pagination */}
             {meta && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={meta.totalPages}
-                onPageChange={setCurrentPage}
-              />
+              <div className="mt-8">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={meta.totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
             )}
           </>
         )}
