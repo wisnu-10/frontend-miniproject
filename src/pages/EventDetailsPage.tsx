@@ -199,7 +199,12 @@ const EventDetailsPage: React.FC = () => {
           />
         </figure>
         <div className="card-body lg:w-1/2">
-          <h2 className="card-title text-4xl mb-2">{event.name}</h2>
+          <h2 className="card-title text-4xl mb-1">{event.name}</h2>
+          {event.organizer && (
+            <p className="text-sm text-base-content/60 font-medium mb-3">
+              Organized by <span className="font-semibold text-primary">{event.organizer.full_name}</span>
+            </p>
+          )}
           <div className="flex gap-2 mb-4">
             <div className="badge badge-primary">
               {typeof event.category === "object"
