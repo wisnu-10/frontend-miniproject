@@ -4,11 +4,14 @@ EventHype is a modern event discovery and management platform. This repository c
 
 ## Features
 
+### 🧭 Core Navigation
+- **Responsive Navbar**: Modern layout featuring a prominent, centered search bar for quick event discovery, an integrated Light/Dark theme toggle, and a streamlined user profile menu for easy account and role-specific dashboard access.
+
 ### 🛒 Event Discovery
 - **Browse Events**: View a paginated list of upcoming events (9 per page) with page navigation controls and a "Showing X–Y of Z events" result summary. Page resets to 1 when filters or search terms change. **Finished events** (past their end date) are automatically hidden from the listing.
 - **Search**: Real-time search by event name.
 - **Filtering**: Filter events by category, location (city), price range, and free/paid status. Categories are dynamically loaded from `GET /categories` (sent as `category_id` query param) and locations from `GET /events/meta/locations` (displayed as `City, Province`).
-- **Event Details**: Comprehensive view of event information, including description, date/time, location, ticket availability, and user reviews.
+- **Event Details**: Comprehensive view of event information, including description, date/time, location, ticket availability (presented in a clean, proportional table layout), and user reviews.
 
 ### 💳 Functionality: Transactions
 - **Checkout**: Seamless booking flow for purchasing event tickets (Customer Only).
@@ -23,7 +26,7 @@ EventHype is a modern event discovery and management platform. This repository c
 
 ### 🔧 Organizer Dashboard
 - **Dashboard**: View a list of created events.
-- **Create Event**: Comprehensive form to publish new events with multiple ticket types. Categories are dynamically loaded from the backend API. Supports **image upload** via Cloudinary (JPEG/PNG/WebP, max 2MB) with preview. Includes a **Free Event** checkbox that, when checked, hides the base price and ticket types/pricing sections and automatically sets all prices to zero. **Field syncing**: changing the base price automatically updates the default (first) ticket type's price; total seats is auto-calculated as the sum of all ticket type quantities (read-only for paid events, manually editable for free events).
+- **Create Event**: Comprehensive form to publish new events with multiple ticket types. Features an enlarged description area for detailed event information. Categories are dynamically loaded from the backend API. Supports **image upload** via Cloudinary (JPEG/PNG/WebP, max 2MB) with preview. Includes a **Free Event** checkbox that, when checked, hides the base price and ticket types/pricing sections and automatically sets all prices to zero. **Field syncing**: changing the base price automatically updates the default (first) ticket type's price; total seats is auto-calculated as the sum of all ticket type quantities (read-only for paid events, manually editable for free events).
 - **Promotions**: Full promotion management — create, view all promotions in a table with status badges (Active/Expired/Maxed), edit discount details, and delete unused promotions. Delete is disabled for promotions that have already been used.
 - **Transaction Management**: View all transactions for owned events and accept/reject them with ease.
 - **Management**: Edit and delete events.

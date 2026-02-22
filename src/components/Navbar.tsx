@@ -41,17 +41,18 @@ const Navbar: React.FC = () => {
 
   return (
     <div className="navbar sticky top-0 z-50 glass-header px-4 sm:px-8 transition-all duration-300">
-      <div className="flex-1">
+      <div className="navbar-start">
         <Link
           to="/"
-          className="btn btn-ghost normal-case text-2xl font-black tracking-tight text-primary hover:bg-transparent"
+          className="btn btn-ghost normal-case text-2xl font-black tracking-tight text-primary hover:bg-transparent xl:pl-0"
         >
           EventHype
         </Link>
       </div>
-      <div className="flex-none gap-4">
+
+      <div className="navbar-center hidden md:flex">
         {/* Search input with modern styling */}
-        <div className="form-control hidden md:flex relative group">
+        <div className="form-control relative group">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -71,12 +72,14 @@ const Navbar: React.FC = () => {
           <input
             type="text"
             placeholder="Search amazing events..."
-            className="input input-bordered w-full md:w-64 lg:w-80 pl-10 bg-base-100/50 focus:bg-base-100 transition-all duration-300 focus:ring-2 focus:ring-primary/20 border-base-300"
+            className="input input-bordered w-[350px] lg:w-[500px] rounded-full pl-10 bg-base-100/50 focus:bg-base-100 transition-all duration-300 focus:ring-2 focus:ring-primary/20 border-base-300"
             value={searchTerm}
             onChange={handleSearchChange}
           />
         </div>
+      </div>
 
+      <div className="navbar-end gap-2 sm:gap-4">
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
@@ -168,7 +171,7 @@ const Navbar: React.FC = () => {
             </ul>
           </div>
         ) : (
-          <div className="flex gap-3 items-center ml-2">
+          <div className="flex gap-2 items-center ml-1">
             <Link
               to="/login"
               className="btn btn-ghost rounded-full font-semibold hover:bg-base-200"
