@@ -197,57 +197,59 @@ const CheckoutPage: React.FC = () => {
 
                     {/* Discounts & Points */}
                     <div className="card bg-base-100 shadow-md">
-                        <div className="card-body">
-                            <h3 className="card-title text-lg">Discounts</h3>
+                        <div className="card-body p-5">
+                            <h3 className="card-title text-base mb-2">Discounts & Points</h3>
 
                             {/* Warning about exclusivity */}
-                            <div role="alert" className="alert alert-info text-xs py-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div role="alert" className="alert alert-info text-xs py-2 px-3 shadow-sm rounded-md mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 <span>You can only use one: Promotion, Coupon, OR Points.</span>
                             </div>
 
-                            {/* Promotions */}
-                            <div className="form-control w-full">
-                                <label className="label"><span className="label-text">Event Promotions</span></label>
-                                <select
-                                    className="select select-bordered"
-                                    value={selectedPromotion?.id || ""}
-                                    onChange={(e) => handlePromotionSelect(e.target.value)}
-                                    disabled={!!selectedCoupon || usePoints}
-                                >
-                                    <option value="">Select a promotion</option>
-                                    {event.promotions?.map((promo: Promotion) => (
-                                        <option key={promo.id} value={promo.id}>
-                                            {promo.code} - {promo.discount_percentage ? `${promo.discount_percentage}%` : formatCurrency(promo.discount_amount!)} off
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {/* Promotions */}
+                                <div className="form-control w-full">
+                                    <label className="label py-1"><span className="label-text text-xs font-semibold">Event Promotions</span></label>
+                                    <select
+                                        className="select select-bordered select-sm w-full"
+                                        value={selectedPromotion?.id || ""}
+                                        onChange={(e) => handlePromotionSelect(e.target.value)}
+                                        disabled={!!selectedCoupon || usePoints}
+                                    >
+                                        <option value="">Select a promotion</option>
+                                        {event.promotions?.map((promo: Promotion) => (
+                                            <option key={promo.id} value={promo.id}>
+                                                {promo.code} - {promo.discount_percentage ? `${promo.discount_percentage}%` : formatCurrency(promo.discount_amount!)} off
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
 
-                            {/* Coupons */}
-                            <div className="form-control w-full">
-                                <label className="label"><span className="label-text">My Coupons</span></label>
-                                <select
-                                    className="select select-bordered"
-                                    value={selectedCoupon?.id || ""}
-                                    onChange={(e) => handleCouponSelect(e.target.value)}
-                                    disabled={!!selectedPromotion || usePoints}
-                                >
-                                    <option value="">Select a coupon</option>
-                                    {coupons.length > 0 ? coupons.map(coupon => (
-                                        <option key={coupon.id} value={coupon.id}>
-                                            {coupon.code} - {coupon.discount_percentage ? `${coupon.discount_percentage}%` : formatCurrency(coupon.discount_amount!)} off
-                                        </option>
-                                    )) : <option disabled>No coupons available</option>}
-                                </select>
+                                {/* Coupons */}
+                                <div className="form-control w-full">
+                                    <label className="label py-1"><span className="label-text text-xs font-semibold">My Coupons</span></label>
+                                    <select
+                                        className="select select-bordered select-sm w-full"
+                                        value={selectedCoupon?.id || ""}
+                                        onChange={(e) => handleCouponSelect(e.target.value)}
+                                        disabled={!!selectedPromotion || usePoints}
+                                    >
+                                        <option value="">Select a coupon</option>
+                                        {coupons.length > 0 ? coupons.map(coupon => (
+                                            <option key={coupon.id} value={coupon.id}>
+                                                {coupon.code} - {coupon.discount_percentage ? `${coupon.discount_percentage}%` : formatCurrency(coupon.discount_amount!)} off
+                                            </option>
+                                        )) : <option disabled>No coupons available</option>}
+                                    </select>
+                                </div>
                             </div>
 
                             {/* Points */}
-                            <div className="form-control mt-4">
-                                <label className="label cursor-pointer justify-start gap-4">
+                            <div className="form-control mt-3 bg-base-200/50 rounded-lg p-3 border border-base-200">
+                                <label className="label cursor-pointer justify-start gap-3 p-0">
                                     <input
                                         type="checkbox"
-                                        className="toggle toggle-primary"
+                                        className="checkbox checkbox-sm checkbox-primary rounded"
                                         checked={usePoints}
                                         onChange={(e) => {
                                             if (e.target.checked) {
@@ -258,7 +260,7 @@ const CheckoutPage: React.FC = () => {
                                         }}
                                         disabled={!!selectedPromotion || !!selectedCoupon || points === 0}
                                     />
-                                    <span className="label-text">Use Points (Balance: {formatCurrency(points)})</span>
+                                    <span className="label-text text-sm font-medium">Use Points (Balance: {formatCurrency(points)})</span>
                                 </label>
                             </div>
                         </div>
@@ -304,7 +306,7 @@ const CheckoutPage: React.FC = () => {
                                 onClick={handleCheckout}
                                 disabled={Object.values(ticketQuantities).every(qty => qty === 0) || Object.keys(ticketQuantities).length === 0}
                             >
-                                {finalTotal === 0 ? 'Get Free Tickets' : 'Pay Now'}
+                                {finalTotal === 0 ? 'Get Tickets' : 'Pay Now'}
                             </button>
                         </div>
                     </div>
