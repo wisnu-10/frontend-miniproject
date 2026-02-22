@@ -197,9 +197,17 @@ const CreateEventPage: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="form-control mt-4">
-                    <label className="label">Description</label>
-                    <textarea name="description" onChange={formik.handleChange} value={formik.values.description} className="textarea textarea-bordered h-24"></textarea>
+                <div className="form-control mt-4 flex flex-col w-full">
+                    <label className="label">
+                        <span className="label-text font-medium">Description</span>
+                    </label>
+                    <textarea
+                        name="description"
+                        onChange={formik.handleChange}
+                        value={formik.values.description}
+                        className="textarea textarea-bordered w-full h-48 text-base leading-relaxed"
+                        placeholder="Enter comprehensive event details here..."
+                    ></textarea>
                     {formik.touched.description && formik.errors.description && <div className="text-error text-xs mt-1">{formik.errors.description}</div>}
                 </div>
 

@@ -247,28 +247,26 @@ const EventDetailsPage: React.FC = () => {
       {event.ticket_types && event.ticket_types.length > 0 && (
         <div className="bg-base-100 p-6 rounded-lg shadow-xl mb-6">
           <h3 className="text-2xl font-bold mb-4">Ticket Types</h3>
-          <div className="overflow-x-auto">
-            <table className="table w-full">
-              <thead>
+          <div className="overflow-x-auto flex justify-center">
+            <table className="table table-zebra table-md w-full max-w-3xl text-center border rounded-lg overflow-hidden">
+              <thead className="bg-base-200 text-base-content text-sm">
                 <tr>
-                  <th>Type</th>
-                  <th>Price</th>
-                  <th>Available</th>
-                  <th>Action</th>
+                  <th className="text-center font-bold text-base">Type</th>
+                  <th className="text-center font-bold text-base">Price</th>
+                  <th className="text-center font-bold text-base">Available</th>
                 </tr>
               </thead>
               <tbody>
                 {event.ticket_types.map((ticket) => (
-                  <tr key={ticket.id}>
-                    <td>{ticket.name}</td>
-                    <td>
+                  <tr key={ticket.id} className="hover">
+                    <td className="font-semibold text-base">{ticket.name}</td>
+                    <td className="text-primary font-medium text-base">
                       {ticket.price > 0
                         ? `Rp ${ticket.price.toLocaleString()}`
                         : "Free"}
                     </td>
-                    <td>{ticket.available_quantity}</td>
-                    <td>
-                      <button className="btn btn-ghost btn-xs">Select</button>
+                    <td className="text-base">
+                      <div className="badge badge-neutral p-3">{ticket.available_quantity}</div>
                     </td>
                   </tr>
                 ))}
