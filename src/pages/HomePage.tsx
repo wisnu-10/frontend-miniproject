@@ -47,7 +47,11 @@ const HomePage: React.FC = () => {
         };
 
         const response = await api.get("/events", { params });
-        setEvents(response.data.data);
+        const now = new Date();
+        const activeEvents = (response.data.data as Event[]).filter(
+          (event) => new Date(event.end_date) >= now
+        );
+        setEvents(activeEvents);
         setMeta(response.data.meta);
       } catch (error) {
         console.error("Failed to fetch events:", error);
