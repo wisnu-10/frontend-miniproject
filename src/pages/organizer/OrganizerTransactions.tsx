@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   getOrganizerTransactions,
   updateTransactionStatus,
@@ -58,11 +59,11 @@ const OrganizerTransactions: React.FC = () => {
     if (!confirm("Are you sure you want to ACCEPT this transaction?")) return;
     try {
       await updateTransactionStatus(id, TransactionStatus.DONE);
-      alert("Transaction accepted");
+      toast.success("Transaction accepted");
       fetchTransactions();
     } catch (error: any) {
       console.error(error);
-      alert(error.response?.data?.message || "Action failed");
+      toast.error(error.response?.data?.message || "Action failed");
     }
   };
 
@@ -81,12 +82,12 @@ const OrganizerTransactions: React.FC = () => {
         TransactionStatus.REJECTED,
         rejectionReason,
       );
-      alert("Transaction rejected");
+      toast.success("Transaction rejected");
       fetchTransactions();
       (document.getElementById("reject_modal") as HTMLDialogElement).close();
     } catch (error: any) {
       console.error(error);
-      alert(error.response?.data?.message || "Action failed");
+      toast.error(error.response?.data?.message || "Action failed");
     }
   };
 
