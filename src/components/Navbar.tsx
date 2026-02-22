@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaSun, FaMoon } from "react-icons/fa";
 import useDebounce from "../hooks/useDebounce";
+import { useTheme } from "../hooks/useTheme";
 
 const Navbar: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { theme, toggleTheme } = useTheme();
 
   // Initialize from URL param if present
   const [searchTerm, setSearchTerm] = useState(
@@ -38,44 +40,90 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <div className="navbar bg-base-100 shadow-md px-4 sm:px-8">
+    <div className="navbar sticky top-0 z-50 glass-header px-4 sm:px-8 transition-all duration-300">
       <div className="flex-1">
         <Link
           to="/"
-          className="btn btn-ghost normal-case text-xl font-bold text-primary"
+          className="btn btn-ghost normal-case text-2xl font-black tracking-tight text-primary hover:bg-transparent"
         >
           EventHype
         </Link>
       </div>
-      <div className="flex-none gap-2">
-        <div className="form-control hidden sm:block">
+      <div className="flex-none gap-4">
+        {/* Search input with modern styling */}
+        <div className="form-control hidden md:flex relative group">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
           <input
             type="text"
-            placeholder="Search events..."
-            className="input input-bordered w-full max-w-xs"
+            placeholder="Search amazing events..."
+            className="input input-bordered w-full md:w-64 lg:w-80 pl-10 bg-base-100/50 focus:bg-base-100 transition-all duration-300 focus:ring-2 focus:ring-primary/20 border-base-300"
             value={searchTerm}
             onChange={handleSearchChange}
           />
         </div>
 
+        {/* Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          className="btn btn-ghost btn-circle"
+          aria-label="Toggle Theme"
+        >
+          {theme === "light" ? (
+            <FaMoon className="text-xl text-primary" />
+          ) : (
+            <FaSun className="text-xl text-warning" />
+          )}
+        </button>
+
         {isAuthenticated ? (
           <div className="dropdown dropdown-end">
-            <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
-              <div className="w-10 rounded-full">
-                <FaUserCircle className="w-full h-full text-3xl" />
+            <label
+              tabIndex={0}
+              className="btn btn-ghost btn-circle avatar ring ring-transparent hover:ring-primary/30 transition-all duration-300"
+            >
+              <div className="w-10 rounded-full bg-base-200 flex items-center justify-center text-primary">
+                {user?.profile_picture ? (
+                  <img src={user.profile_picture} alt="Profile" />
+                ) : (
+                  <FaUserCircle className="w-full h-full text-3xl" />
+                )}
               </div>
             </label>
             <ul
               tabIndex={0}
-              className="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52"
+              className="mt-4 p-3 shadow-xl menu menu-compact dropdown-content bg-base-100 rounded-2xl w-56 border border-base-200/50"
             >
-              <li>
-                <span className="font-semibold text-lg">{user?.full_name}</span>
-                <span className="text-xs text-gray-500">{user?.role}</span>
+              <li className="px-2 py-1 mb-2">
+                <span className="font-bold text-lg text-base-content tracking-tight">
+                  {user?.full_name}
+                </span>
+                <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full w-max mt-1">
+                  {user?.role}
+                </span>
               </li>
-              <div className="divider my-0"></div>
+              <div className="divider my-1 h-px bg-base-200"></div>
               <li>
-                <Link to="/profile">Profile</Link>
+                <Link
+                  to="/profile"
+                  className="rounded-xl hover:bg-base-200 transition-colors"
+                >
+                  Profile
+                </Link>
               </li>
               {user?.role === "ORGANIZER" && (
                 <>
@@ -120,12 +168,18 @@ const Navbar: React.FC = () => {
             </ul>
           </div>
         ) : (
-          <div className="flex gap-2">
-            <Link to="/login" className="btn btn-primary btn-sm">
-              Login
+          <div className="flex gap-3 items-center ml-2">
+            <Link
+              to="/login"
+              className="btn btn-ghost rounded-full font-semibold hover:bg-base-200"
+            >
+              Log in
             </Link>
-            <Link to="/register" className="btn btn-outline btn-sm">
-              Register
+            <Link
+              to="/register"
+              className="btn btn-primary rounded-full font-semibold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
+            >
+              Sign up
             </Link>
           </div>
         )}

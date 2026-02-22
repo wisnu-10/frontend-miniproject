@@ -27,18 +27,20 @@ import MyReviewsPage from "./pages/MyReviewsPage";
 import WriteReviewPage from "./pages/WriteReviewPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuthStore } from "./store/useAuthStore";
+import { useTheme } from "./hooks/useTheme";
 
 function App() {
   const { checkAuth } = useAuthStore();
+  useTheme(); // Initialize theme on app load
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
   return (
-    <div className="min-h-screen bg-base-200 flex flex-col">
+    <div className="min-h-screen bg-base-100 flex flex-col font-sans">
       <Navbar />
-      <main className="grow">
+      <main className="grow w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 transition-all duration-300">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -71,7 +73,10 @@ function App() {
               element={<TransactionDetailPage />}
             />
             <Route path="/my-reviews" element={<MyReviewsPage />} />
-            <Route path="/events/:eventId/review" element={<WriteReviewPage />} />
+            <Route
+              path="/events/:eventId/review"
+              element={<WriteReviewPage />}
+            />
           </Route>
 
           {/* Organizer Routes */}
