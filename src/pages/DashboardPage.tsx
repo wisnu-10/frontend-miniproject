@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import { getDashboardOverview } from "../services/dashboard.service";
 import { getMyEvents, deleteEvent } from "../services/event.service";
 import type { DashboardOverview } from "../types/dashboard";
@@ -59,49 +60,49 @@ const DashboardPage: React.FC = () => {
       setEvents(events.filter((e) => e.id !== id));
     } catch (error) {
       console.error("Failed to delete event", error);
-      alert("Failed to delete event");
+      toast.error("Failed to delete event");
     }
   };
 
   const statCards = overview
     ? [
-      {
-        label: "Total Events",
-        value: overview.total_events,
-        icon: <FaCalendarAlt />,
-        color: "text-primary",
-      },
-      {
-        label: "Total Revenue",
-        value: formatCurrency(overview.total_revenue),
-        icon: <FaMoneyBillWave />,
-        color: "text-success",
-      },
-      {
-        label: "Total Transactions",
-        value: overview.total_transactions,
-        icon: <FaReceipt />,
-        color: "text-info",
-      },
-      {
-        label: "Pending Confirmations",
-        value: overview.pending_confirmations,
-        icon: <FaClock />,
-        color: "text-warning",
-      },
-      {
-        label: "Upcoming Events",
-        value: overview.upcoming_events,
-        icon: <FaRocket />,
-        color: "text-secondary",
-      },
-      {
-        label: "Completed Transactions",
-        value: overview.completed_transactions,
-        icon: <FaCheckCircle />,
-        color: "text-accent",
-      },
-    ]
+        {
+          label: "Total Events",
+          value: overview.total_events,
+          icon: <FaCalendarAlt />,
+          color: "text-primary",
+        },
+        {
+          label: "Total Revenue",
+          value: formatCurrency(overview.total_revenue),
+          icon: <FaMoneyBillWave />,
+          color: "text-success",
+        },
+        {
+          label: "Total Transactions",
+          value: overview.total_transactions,
+          icon: <FaReceipt />,
+          color: "text-info",
+        },
+        {
+          label: "Pending Confirmations",
+          value: overview.pending_confirmations,
+          icon: <FaClock />,
+          color: "text-warning",
+        },
+        {
+          label: "Upcoming Events",
+          value: overview.upcoming_events,
+          icon: <FaRocket />,
+          color: "text-secondary",
+        },
+        {
+          label: "Completed Transactions",
+          value: overview.completed_transactions,
+          icon: <FaCheckCircle />,
+          color: "text-accent",
+        },
+      ]
     : [];
 
   return (

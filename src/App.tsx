@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
@@ -39,6 +41,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-base-100 flex flex-col font-sans">
+      <ToastContainer position="bottom-right" />
       <Navbar />
       <main className="grow w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 transition-all duration-300">
         <Routes>

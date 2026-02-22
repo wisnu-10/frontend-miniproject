@@ -1,26 +1,26 @@
-import React, { useState } from "react";
+import React from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useNavigate, Link } from "react-router-dom";
 import { useFormik } from "formik";
 import { loginSchema, type LoginValues } from "../validation";
 import api from "../services/api";
+import { toast } from "react-toastify";
 
 const LoginPage: React.FC = () => {
   const { checkAuth } = useAuthStore();
   const navigate = useNavigate();
-  const [error, setError] = useState("");
 
   const formik = useFormik<LoginValues>({
     initialValues: { email: "", password: "" },
     validationSchema: loginSchema,
     onSubmit: async (values, { setSubmitting }) => {
-      setError("");
       try {
         await api.post("/auth/login", values);
         await checkAuth();
+        toast.success("Login successful!");
         navigate("/");
       } catch (err: any) {
-        setError(err.response?.data?.message || "Login failed");
+        toast.error(err.response?.data?.message || "Login failed");
       } finally {
         setSubmitting(false);
       }
@@ -36,7 +36,6 @@ const LoginPage: React.FC = () => {
         <h2 className="text-3xl font-bold mb-6 text-center text-primary">
           Login
         </h2>
-        {error && <div className="alert alert-error mb-4 text-sm">{error}</div>}
 
         <div className="form-control mb-4">
           <label className="label">
