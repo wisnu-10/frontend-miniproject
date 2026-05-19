@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   getPromotionsByEvent,
@@ -7,13 +7,17 @@ import {
 } from "../services/promotion.service";
 import type { Promotion } from "../types";
 import { formatCurrency } from "../utils/currency";
+import ConfirmDialog from "../components/ConfirmDialog";
+import BackButton from "../components/BackButton";
 
 const ManagePromotionsPage: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
-  const navigate = useNavigate();
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteCode, setDeleteCode] = useState("");
 
   useEffect(() => {
     const fetchPromotions = async () => {
@@ -31,16 +35,25 @@ const ManagePromotionsPage: React.FC = () => {
     fetchPromotions();
   }, [eventId]);
 
-  const handleDelete = async (promoId: string, code: string) => {
-    if (!eventId) return;
-    if (!confirm(`Are you sure you want to delete promotion "${code}"?`))
-      return;
+  const handleDeleteClick = (promoId: string, code: string) => {
+    setDeleteId(promoId);
+    setDeleteCode(code);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!eventId || !deleteId) return;
+    setConfirmOpen(false);
     try {
-      await deletePromotion(eventId, promoId);
-      setPromotions(promotions.filter((p) => p.id !== promoId));
+      await deletePromotion(eventId, deleteId);
+      setPromotions(promotions.filter((p) => p.id !== deleteId));
+      toast.success("Promotion deleted successfully");
     } catch (err: any) {
       console.error("Failed to delete promotion", err);
       toast.error(err.response?.data?.message || "Failed to delete promotion");
+    } finally {
+      setDeleteId(null);
+      setDeleteCode("");
     }
   };
 
@@ -80,12 +93,7 @@ const ManagePromotionsPage: React.FC = () => {
           >
             + Create Promotion
           </Link>
-          <button
-            onClick={() => navigate("/organizer/dashboard")}
-            className="btn btn-outline btn-sm"
-          >
-            ← Dashboard
-          </button>
+          <BackButton to="/organizer/dashboard" label="Dashboard" />
         </div>
       </div>
 
@@ -151,7 +159,7 @@ const ManagePromotionsPage: React.FC = () => {
                         </Link>
                         <button
                           className="btn btn-ghost btn-xs text-error"
-                          onClick={() => handleDelete(promo.id, promo.code)}
+                          onClick={() => handleDeleteClick(promo.id, promo.code)}
                           disabled={promo.current_usage > 0}
                           title={
                             promo.current_usage > 0
@@ -183,6 +191,22 @@ const ManagePromotionsPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        title="Delete Promotion"
+        message={`Are you sure you want to delete promotion "${deleteCode}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
+          setConfirmOpen(false);
+          setDeleteId(null);
+          setDeleteCode("");
+        }}
+        variant="danger"
+      />
     </div>
   );
 };
