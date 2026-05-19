@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
 import {
     getPromotionsByEvent,
     updatePromotion,
 } from "../services/promotion.service";
 import type { Promotion } from "../types";
+import { editPromotionSchema, type PromotionValues } from "../validation";
 
 const EditPromotionPage: React.FC = () => {
     const { eventId, promoId } = useParams<{
@@ -21,26 +21,7 @@ const EditPromotionPage: React.FC = () => {
         "percentage",
     );
 
-    const validationSchema = Yup.object({
-        code: Yup.string()
-            .uppercase()
-            .min(3, "Code must be at least 3 characters")
-            .max(20, "Code must be at most 20 characters")
-            .required("Code is required"),
-        value: Yup.number()
-            .positive("Must be positive")
-            .required("Value is required"),
-        max_usage: Yup.number()
-            .positive()
-            .integer()
-            .required("Max usage is required"),
-        valid_from: Yup.date().required("Start date is required"),
-        valid_until: Yup.date()
-            .required("End date is required")
-            .min(Yup.ref("valid_from"), "End date must be after start date"),
-    });
-
-    const formik = useFormik({
+    const formik = useFormik<PromotionValues>({
         initialValues: {
             code: "",
             value: 0,
@@ -48,7 +29,7 @@ const EditPromotionPage: React.FC = () => {
             valid_from: "",
             valid_until: "",
         },
-        validationSchema,
+        validationSchema: editPromotionSchema,
         enableReinitialize: true,
         onSubmit: async (values) => {
             if (!eventId || !promoId) return;

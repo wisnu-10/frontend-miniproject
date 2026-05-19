@@ -10,3 +10,14 @@ export {
   type ResetPasswordValues,
 } from "./password.schema";
 export { reviewSchema, type ReviewValues } from "./review.schema";
+export {
+  createPromotionSchema,
+  editPromotionSchema,
+  type PromotionValues,
+} from "./promotion.schema";
+export {
+  createEventSchema,
+  editEventSchema,
+  type CreateEventValues,
+  type EditEventValues,
+} from "./event.schema";

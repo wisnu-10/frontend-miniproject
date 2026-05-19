@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useFormik, FieldArray, FormikProvider } from 'formik';
-import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import BackButton from '../components/BackButton';
+import { createEventSchema, type CreateEventValues } from '../validation';
 
 const CreateEventPage: React.FC = () => {
     const navigate = useNavigate();
@@ -36,35 +37,7 @@ const CreateEventPage: React.FC = () => {
         }
     };
 
-    const validationSchema = Yup.object({
-        name: Yup.string().required('Event name is required'),
-        description: Yup.string().required('Description is required'),
-        category_id: Yup.string().required('Category is required'),
-        city: Yup.string().required('City is required'),
-        province: Yup.string().required('Province is required'),
-        start_date: Yup.date().required('Start date is required'),
-        end_date: Yup.date().required('End date is required').min(Yup.ref('start_date'), 'End date must be after start date'),
-        base_price: Yup.number().min(0, 'Price cannot be negative').when('is_free', {
-            is: false,
-            then: (schema) => schema.required('Base price is required'),
-            otherwise: (schema) => schema.notRequired(),
-        }),
-        total_seats: Yup.number().min(1, 'Total seats must be at least 1').required('Total seats is required'),
-        is_free: Yup.boolean(),
-        ticket_types: Yup.array().when('is_free', {
-            is: false,
-            then: (schema) => schema.of(
-                Yup.object({
-                    name: Yup.string().required('Ticket name is required'),
-                    price: Yup.number().min(0, 'Price cannot be negative').required('Price is required'),
-                    quantity: Yup.number().min(1, 'Quantity must be at least 1').required('Quantity is required'),
-                })
-            ),
-            otherwise: (schema) => schema.notRequired(),
-        })
-    });
-
-    const formik = useFormik({
+    const formik = useFormik<CreateEventValues>({
         initialValues: {
             name: '',
             description: '',
@@ -78,7 +51,7 @@ const CreateEventPage: React.FC = () => {
             is_free: false,
             ticket_types: [{ name: 'Regular', price: 0, quantity: 100 }]
         },
-        validationSchema,
+        validationSchema: createEventSchema,
         onSubmit: async (values) => {
             setLoading(true);
             setError('');
@@ -122,7 +95,10 @@ const CreateEventPage: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4 max-w-3xl">
-            <h1 className="text-3xl font-bold mb-6">Create New Event</h1>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-3xl font-bold">Create New Event</h1>
+                <BackButton to="/organizer/dashboard" label="Dashboard" />
+            </div>
 
             {error && <div className="alert alert-error mb-4">{error}</div>}
 

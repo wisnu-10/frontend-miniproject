@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   getTransactionById,
@@ -9,15 +9,19 @@ import {
 import type { Transaction } from "../../types/transaction";
 import { TransactionStatus } from "../../types/transaction";
 import { formatCurrency } from "../../utils/currency";
+import ConfirmDialog from "../../components/ConfirmDialog";
+import BackButton from "../../components/BackButton";
 
 const TransactionDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
 
   const [transaction, setTransaction] = useState<Transaction | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number>(0);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const fetchTransaction = async () => {
     if (!id) return;
@@ -67,14 +71,22 @@ const TransactionDetailPage: React.FC = () => {
     return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || !e.target.files[0] || !id) return;
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0]) return;
     const file = e.target.files[0];
+    setSelectedFile(file);
+    const localUrl = URL.createObjectURL(file);
+    setPreviewUrl(localUrl);
+  };
+
+  const handleConfirmUpload = async () => {
+    if (!selectedFile || !id) return;
 
     setUploading(true);
     try {
-      await uploadPaymentProof(id, file);
+      await uploadPaymentProof(id, selectedFile);
       toast.success("Payment proof uploaded successfully!");
+      handleClearSelection();
       fetchTransaction();
     } catch (error: any) {
       console.error(error);
@@ -84,9 +96,29 @@ const TransactionDetailPage: React.FC = () => {
     }
   };
 
-  const handleCancel = async () => {
-    if (!id || !confirm("Are you sure you want to cancel this transaction?"))
-      return;
+  const handleClearSelection = () => {
+    setSelectedFile(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  const handleCancelClick = () => {
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    if (!id) return;
+    setConfirmOpen(false);
     try {
       await cancelTransaction(id);
       toast.success("Transaction cancelled");
@@ -110,12 +142,7 @@ const TransactionDetailPage: React.FC = () => {
     <div className="container mx-auto p-4 max-w-4xl">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Transaction Details</h1>
-        <button
-          onClick={() => navigate("/transactions")}
-          className="btn btn-ghost"
-        >
-          Back to List
-        </button>
+        <BackButton to="/transactions" label="Daftar Transaksi" />
       </div>
 
       {/* Status Card */}
@@ -160,22 +187,58 @@ const TransactionDetailPage: React.FC = () => {
                 Please upload your payment proof before the deadline.
               </p>
 
-              <div className="flex items-center gap-4">
-                <input
-                  type="file"
-                  className="file-input file-input-bordered w-full max-w-xs"
-                  accept="image/*"
-                  onChange={handleUpload}
-                  disabled={uploading}
-                />
-                {uploading && <span className="loading loading-spinner"></span>}
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-4">
+                  <input
+                    type="file"
+                    className="file-input file-input-bordered w-full max-w-xs"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    disabled={uploading}
+                    key={selectedFile ? selectedFile.name : "empty"}
+                  />
+                  {uploading && <span className="loading loading-spinner"></span>}
+                </div>
+
+                {selectedFile && previewUrl && (
+                  <div className="p-4 border border-base-200 bg-base-200/40 rounded-2xl max-w-sm mt-2 transition-all duration-300 animate-fadeIn">
+                    <p className="text-xs font-semibold text-base-content/60 uppercase tracking-wider mb-2">
+                      Pratinjau Bukti Pembayaran
+                    </p>
+                    <div className="relative group overflow-hidden rounded-xl border border-base-300 bg-black/5">
+                      <img
+                        src={previewUrl}
+                        alt="Preview Bukti Pembayaran"
+                        className="max-h-64 w-full object-contain rounded-xl"
+                      />
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                      <button
+                        type="button"
+                        className={`btn btn-primary btn-sm flex-1 ${uploading ? "loading" : ""}`}
+                        onClick={handleConfirmUpload}
+                        disabled={uploading}
+                      >
+                        {uploading ? "Mengirim..." : "Unggah Bukti Bayar"}
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline btn-sm"
+                        onClick={handleClearSelection}
+                        disabled={uploading}
+                      >
+                        Batal
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="divider">OR</div>
 
               <button
                 className="btn btn-outline btn-error btn-sm"
-                onClick={handleCancel}
+                onClick={handleCancelClick}
               >
                 Cancel Transaction
               </button>
@@ -326,6 +389,18 @@ const TransactionDetailPage: React.FC = () => {
             </div>
           </div>
         )}
+
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        title="Cancel Transaction"
+        message="Are you sure you want to cancel this transaction? This action cannot be undone."
+        confirmLabel="Yes, Cancel"
+        cancelLabel="No, Keep"
+        onConfirm={handleConfirmCancel}
+        onCancel={() => setConfirmOpen(false)}
+        variant="danger"
+      />
     </div>
   );
 };

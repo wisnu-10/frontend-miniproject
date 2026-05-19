@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useFormik, FieldArray, FormikProvider } from "formik";
-import * as Yup from "yup";
 import { getEventById, updateEvent } from "../services/event.service";
 import api from "../services/api";
+import BackButton from "../components/BackButton";
+import { editEventSchema, type EditEventValues } from "../validation";
 
 const EditEventPage: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
@@ -15,24 +16,7 @@ const EditEventPage: React.FC = () => {
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState("");
 
-  const validationSchema = Yup.object({
-    name: Yup.string().required("Event name is required"),
-    description: Yup.string().required("Description is required"),
-    category_id: Yup.string().required("Category is required"),
-    city: Yup.string().required("City is required"),
-    province: Yup.string().required("Province is required"),
-    start_date: Yup.string().required("Start date is required"),
-    end_date: Yup.string().required("End date is required"),
-    base_price: Yup.number()
-      .min(0, "Price cannot be negative")
-      .required("Base price is required"),
-    total_seats: Yup.number()
-      .min(1, "Total seats must be at least 1")
-      .required("Total seats is required"),
-    image: Yup.string().url("Must be a valid URL").nullable(),
-  });
-
-  const formik = useFormik({
+  const formik = useFormik<EditEventValues>({
     initialValues: {
       name: "",
       description: "",
@@ -51,7 +35,7 @@ const EditEventPage: React.FC = () => {
         quantity: number;
       }[],
     },
-    validationSchema,
+    validationSchema: editEventSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
       if (!eventId) return;
@@ -138,12 +122,7 @@ const EditEventPage: React.FC = () => {
     <div className="container mx-auto p-4 max-w-3xl">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Edit Event</h1>
-        <button
-          onClick={() => navigate("/organizer/dashboard")}
-          className="btn btn-outline btn-sm"
-        >
-          ← Back
-        </button>
+        <BackButton to="/organizer/dashboard" label="Kembali" />
       </div>
 
       {error && <div className="alert alert-error mb-4">{error}</div>}

@@ -6,6 +6,7 @@ import { getMyEvents, deleteEvent } from "../services/event.service";
 import type { DashboardOverview } from "../types/dashboard";
 import type { Event } from "../types";
 import { formatCurrency } from "../utils/currency";
+import ConfirmDialog from "../components/ConfirmDialog";
 import {
   FaCalendarAlt,
   FaMoneyBillWave,
@@ -22,6 +23,8 @@ const DashboardPage: React.FC = () => {
   const [loadingEvents, setLoadingEvents] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOverview = async () => {
@@ -53,14 +56,23 @@ const DashboardPage: React.FC = () => {
     fetchEvents();
   }, [currentPage]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this event?")) return;
+  const handleDeleteClick = (id: string) => {
+    setDeleteId(id);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+    setConfirmOpen(false);
     try {
-      await deleteEvent(id);
-      setEvents(events.filter((e) => e.id !== id));
+      await deleteEvent(deleteId);
+      setEvents(events.filter((e) => e.id !== deleteId));
+      toast.success("Event deleted successfully");
     } catch (error) {
       console.error("Failed to delete event", error);
       toast.error("Failed to delete event");
+    } finally {
+      setDeleteId(null);
     }
   };
 
@@ -239,7 +251,7 @@ const DashboardPage: React.FC = () => {
                           </Link>
                           <button
                             className="btn btn-ghost text-error btn-xs"
-                            onClick={() => handleDelete(event.id)}
+                            onClick={() => handleDeleteClick(event.id)}
                           >
                             Delete
                           </button>
@@ -298,6 +310,21 @@ const DashboardPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        title="Delete Event"
+        message="Are you sure you want to delete this event? This action will permanently remove the event and cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
+          setConfirmOpen(false);
+          setDeleteId(null);
+        }}
+        variant="danger"
+      />
     </div>
   );
 };
