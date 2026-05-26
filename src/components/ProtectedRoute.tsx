@@ -18,7 +18,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
   }
 
   if (!isAuthenticated || !user) {
-    return <Navigate to="/login" replace />;
+    const isOrganizerRoute =
+      allowedRoles?.includes("ORGANIZER") && !allowedRoles?.includes("CUSTOMER");
+    const redirectPath = isOrganizerRoute ? "/organizer/login" : "/login";
+    return <Navigate to={redirectPath} replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {

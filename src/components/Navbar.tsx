@@ -172,18 +172,64 @@ const Navbar: React.FC = () => {
           </div>
         ) : (
           <div className="flex gap-2 items-center ml-1">
-            <Link
-              to="/login"
-              className="btn btn-ghost rounded-full font-semibold hover:bg-base-200"
-            >
-              Log in
-            </Link>
-            <Link
-              to="/register"
-              className="btn btn-primary rounded-full font-semibold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
-            >
-              Sign up
-            </Link>
+            <div className="dropdown dropdown-end">
+              <label
+                tabIndex={0}
+                className="btn btn-ghost rounded-full font-semibold hover:bg-base-200 px-4"
+              >
+                Log in
+              </label>
+              <ul
+                tabIndex={0}
+                className="mt-4 p-3 shadow-xl menu menu-compact dropdown-content bg-base-100 rounded-2xl w-48 border border-base-200/50"
+              >
+                <li>
+                  <Link
+                    to="/login"
+                    className="rounded-xl hover:bg-base-200 transition-colors"
+                  >
+                    As Customer
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/organizer/login"
+                    className="rounded-xl hover:bg-base-200 transition-colors"
+                  >
+                    As Organizer
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div className="dropdown dropdown-end">
+              <label
+                tabIndex={0}
+                className="btn btn-primary rounded-full font-semibold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 px-4"
+              >
+                Sign up
+              </label>
+              <ul
+                tabIndex={0}
+                className="mt-4 p-3 shadow-xl menu menu-compact dropdown-content bg-base-100 rounded-2xl w-48 border border-base-200/50"
+              >
+                <li>
+                  <Link
+                    to="/register"
+                    className="rounded-xl hover:bg-base-200 transition-colors"
+                  >
+                    As Customer
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/organizer/register"
+                    className="rounded-xl hover:bg-base-200 transition-colors"
+                  >
+                    As Organizer
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
         )}
       </div>
