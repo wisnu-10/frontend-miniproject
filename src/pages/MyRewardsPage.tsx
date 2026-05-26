@@ -4,6 +4,7 @@ import { getMyCoupons } from "../services/coupon.service";
 import type { Point, PointHistory } from "../services/point.service";
 import type { Coupon } from "../services/coupon.service";
 import { FaCoins, FaTicketAlt } from "react-icons/fa";
+import { formatCurrency } from "../utils/currency";
 
 const MyRewardsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"points" | "coupons">("points");
@@ -233,7 +234,7 @@ const MyRewardsPage: React.FC = () => {
                           {coupon.discount_percentage
                             ? `${coupon.discount_percentage}% OFF`
                             : coupon.discount_amount
-                              ? `Rp ${coupon.discount_amount.toLocaleString("id-ID")} OFF`
+                              ? `${formatCurrency(coupon.discount_amount)} OFF`
                               : "Discount"}
                         </p>
                       </div>

@@ -5,7 +5,9 @@ import "react-toastify/dist/ReactToastify.css";
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
+import OrganizerLoginPage from "./pages/OrganizerLoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import OrganizerRegisterPage from "./pages/OrganizerRegisterPage";
 import EventDetailsPage from "./pages/EventDetailsPage";
 import DashboardPage from "./pages/DashboardPage";
 import CreateEventPage from "./pages/CreateEventPage";
@@ -47,7 +49,9 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/organizer/login" element={<OrganizerLoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/organizer/register" element={<OrganizerRegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/events/:id" element={<EventDetailsPage />} />

@@ -8,6 +8,7 @@ import {
 import type { Transaction } from "../../types/transaction";
 import { TransactionStatus } from "../../types/transaction";
 import { formatCurrency } from "../../utils/currency";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 const OrganizerTransactions: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -22,6 +23,10 @@ const OrganizerTransactions: React.FC = () => {
   // For rejection modal
   const [selectedTrxId, setSelectedTrxId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
+
+  // For acceptance confirmation dialog
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [acceptTrxId, setAcceptTrxId] = useState<string | null>(null);
 
   const fetchTransactions = async () => {
     setLoading(true);
@@ -55,15 +60,23 @@ const OrganizerTransactions: React.FC = () => {
     setSearchParams({ page: newPage.toString(), status: status || "" });
   };
 
-  const handleAccept = async (id: string) => {
-    if (!confirm("Are you sure you want to ACCEPT this transaction?")) return;
+  const handleAcceptClick = (id: string) => {
+    setAcceptTrxId(id);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmAccept = async () => {
+    if (!acceptTrxId) return;
+    setConfirmOpen(false);
     try {
-      await updateTransactionStatus(id, TransactionStatus.DONE);
+      await updateTransactionStatus(acceptTrxId, TransactionStatus.DONE);
       toast.success("Transaction accepted");
       fetchTransactions();
     } catch (error: any) {
       console.error(error);
       toast.error(error.response?.data?.message || "Action failed");
+    } finally {
+      setAcceptTrxId(null);
     }
   };
 
@@ -195,7 +208,7 @@ const OrganizerTransactions: React.FC = () => {
                       <div className="flex gap-2">
                         <button
                           className="btn btn-xs btn-success"
-                          onClick={() => handleAccept(trx.id)}
+                          onClick={() => handleAcceptClick(trx.id)}
                         >
                           Accept
                         </button>
@@ -260,6 +273,21 @@ const OrganizerTransactions: React.FC = () => {
           </div>
         </div>
       </dialog>
+
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        title="Accept Transaction"
+        message="Are you sure you want to accept this transaction? This action will mark the transaction as complete."
+        confirmLabel="Yes, Accept"
+        cancelLabel="Cancel"
+        onConfirm={handleConfirmAccept}
+        onCancel={() => {
+          setConfirmOpen(false);
+          setAcceptTrxId(null);
+        }}
+        variant="success"
+      />
     </div>
   );
 };

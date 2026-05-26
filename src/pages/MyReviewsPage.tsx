@@ -4,6 +4,7 @@ import type { Review, ReviewListResponse } from '../types/review';
 import { getMyReviews, updateReview, deleteReview } from '../services/review.service';
 import { useFormik } from 'formik';
 import { reviewSchema, type ReviewValues } from '../validation';
+import ConfirmDialog from '../components/ConfirmDialog';
 import {
     FaStar,
     FaRegStar,
@@ -59,6 +60,8 @@ const MyReviewsPage: React.FC = () => {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [deleteId, setDeleteId] = useState<string | null>(null);
 
     const fetchReviews = async (page = 1) => {
         setLoading(true);
@@ -77,15 +80,23 @@ const MyReviewsPage: React.FC = () => {
         fetchReviews();
     }, []);
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this review?')) return;
+    const handleDeleteClick = (id: string) => {
+        setDeleteId(id);
+        setConfirmOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!deleteId) return;
+        setConfirmOpen(false);
         try {
-            await deleteReview(id);
+            await deleteReview(deleteId);
             setSuccess('Review deleted successfully');
             fetchReviews(meta.page);
             setTimeout(() => setSuccess(''), 3000);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Failed to delete review');
+        } finally {
+            setDeleteId(null);
         }
     };
 
@@ -225,7 +236,7 @@ const MyReviewsPage: React.FC = () => {
                                             <button className="btn btn-ghost btn-sm" onClick={() => startEdit(review)}>
                                                 <FaEdit className="mr-1" /> Edit
                                             </button>
-                                            <button className="btn btn-ghost btn-sm text-error" onClick={() => handleDelete(review.id)}>
+                                            <button className="btn btn-ghost btn-sm text-error" onClick={() => handleDeleteClick(review.id)}>
                                                 <FaTrash className="mr-1" /> Delete
                                             </button>
                                         </div>
@@ -253,6 +264,21 @@ const MyReviewsPage: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            {/* Confirm Dialog */}
+            <ConfirmDialog
+                isOpen={confirmOpen}
+                title="Delete Review"
+                message="Are you sure you want to delete this review? This action cannot be undone."
+                confirmLabel="Delete"
+                cancelLabel="Cancel"
+                onConfirm={handleConfirmDelete}
+                onCancel={() => {
+                    setConfirmOpen(false);
+                    setDeleteId(null);
+                }}
+                variant="danger"
+            />
         </div>
     );
 };

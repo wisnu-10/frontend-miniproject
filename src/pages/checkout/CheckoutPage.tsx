@@ -7,6 +7,7 @@ import { getMyCoupons, type Coupon } from "../../services/coupon.service";
 import { createTransaction } from "../../services/transaction.service";
 import { formatCurrency } from "../../utils/currency";
 import type { Event, Promotion, TicketType } from "../../types";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 const CheckoutPage: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
@@ -27,6 +28,7 @@ const CheckoutPage: React.FC = () => {
   );
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
   const [usePoints, setUsePoints] = useState(false);
+  const [confirmCheckoutOpen, setConfirmCheckoutOpen] = useState(false);
 
   // Fetch Data
   useEffect(() => {
@@ -59,6 +61,11 @@ const CheckoutPage: React.FC = () => {
     setTicketQuantities((prev) => {
       const current = prev[ticketId] || 0;
       const newVal = Math.max(0, current + delta);
+
+      // Restrict total tickets to 1
+      const totalQty = Object.values(prev).reduce((sum, q) => sum + q, 0);
+      const newTotalQty = totalQty - current + newVal;
+      if (newTotalQty > 1) return prev;
 
       // Check availability
       const ticket = event?.ticket_types?.find(
@@ -132,8 +139,23 @@ const CheckoutPage: React.FC = () => {
   const derivedPointsUsed =
     !isDiscountSelected && usePoints ? Math.min(points, subtotal) : 0;
 
-  const handleCheckout = async () => {
+  const handleCheckoutClick = () => {
     if (!event) return;
+
+    const items = Object.entries(ticketQuantities)
+      .filter(([_, qty]) => qty > 0);
+
+    if (items.length === 0) {
+      toast.warning("Please select at least one ticket");
+      return;
+    }
+
+    setConfirmCheckoutOpen(true);
+  };
+
+  const executeCheckout = async () => {
+    if (!event) return;
+    setConfirmCheckoutOpen(false);
 
     const items = Object.entries(ticketQuantities)
       .filter(([_, qty]) => qty > 0)
@@ -141,11 +163,6 @@ const CheckoutPage: React.FC = () => {
         ticket_type_id: tId,
         quantity: qty,
       }));
-
-    if (items.length === 0) {
-      toast.warning("Please select at least one ticket");
-      return;
-    }
 
     try {
       await createTransaction({
@@ -219,7 +236,8 @@ const CheckoutPage: React.FC = () => {
                       className="btn btn-sm btn-circle btn-outline"
                       onClick={() => handleQuantityChange(ticket.id, 1)}
                       disabled={
-                        ticketQuantities[ticket.id] >= ticket.available_quantity
+                        ticketQuantities[ticket.id] >= ticket.available_quantity ||
+                        Object.values(ticketQuantities).reduce((sum, q) => sum + q, 0) >= 1
                       }
                     >
                       +
@@ -379,7 +397,7 @@ const CheckoutPage: React.FC = () => {
 
               <button
                 className="btn btn-primary w-full mt-4"
-                onClick={handleCheckout}
+                onClick={handleCheckoutClick}
                 disabled={
                   Object.values(ticketQuantities).every((qty) => qty === 0) ||
                   Object.keys(ticketQuantities).length === 0
@@ -391,6 +409,61 @@ const CheckoutPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={confirmCheckoutOpen}
+        title="Konfirmasi Pembelian"
+        message={
+          <div className="space-y-4 text-left">
+            <p className="text-sm">
+              Apakah Anda yakin ingin memesan tiket untuk event{" "}
+              <strong>{event.name}</strong>?
+            </p>
+            <div className="bg-base-200/60 border border-base-300 p-4 rounded-xl text-sm space-y-2">
+              <p className="font-bold text-xs uppercase tracking-wider text-base-content/60 border-b pb-1.5 mb-1.5">
+                Rincian Tiket
+              </p>
+              {Object.entries(ticketQuantities).map(([tId, qty]) => {
+                if (qty <= 0) return null;
+                const ticket = event.ticket_types?.find((t) => t.id === tId);
+                return (
+                  <div key={tId} className="flex justify-between font-medium">
+                    <span>
+                      {ticket?.name} <span className="text-base-content/60 font-normal">x{qty}</span>
+                    </span>
+                    <span>{formatCurrency(ticket ? ticket.price * qty : 0)}</span>
+                  </div>
+                );
+              })}
+
+              {isDiscountSelected && (
+                <div className="flex justify-between text-green-600 font-medium pt-1">
+                  <span>Diskon ({selectedPromotion?.code || selectedCoupon?.code})</span>
+                  <span>- {formatCurrency(discount)}</span>
+                </div>
+              )}
+
+              {usePoints && derivedPointsUsed > 0 && (
+                <div className="flex justify-between text-green-600 font-medium pt-1">
+                  <span>Poin Digunakan</span>
+                  <span>- {formatCurrency(derivedPointsUsed)}</span>
+                </div>
+              )}
+
+              <div className="divider my-1.5"></div>
+              <div className="flex justify-between font-bold text-base text-base-content">
+                <span>Total Bayar</span>
+                <span className="text-primary">{formatCurrency(finalTotal)}</span>
+              </div>
+            </div>
+          </div>
+        }
+        confirmLabel={finalTotal === 0 ? "Dapatkan Tiket" : "Bayar Sekarang"}
+        cancelLabel="Batal"
+        variant="info"
+        onConfirm={executeCheckout}
+        onCancel={() => setConfirmCheckoutOpen(false)}
+      />
     </div>
   );
 };

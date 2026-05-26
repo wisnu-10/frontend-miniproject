@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
+import { createPromotionSchema, type PromotionValues } from '../validation';
 
 const CreatePromotionPage: React.FC = () => {
     const { eventId } = useParams<{ eventId: string }>();
@@ -11,16 +11,7 @@ const CreatePromotionPage: React.FC = () => {
     const [error, setError] = useState('');
     const [discountType, setDiscountType] = useState<'percentage' | 'amount'>('percentage');
 
-    const validationSchema = Yup.object({
-        code: Yup.string().uppercase(),
-        // Validation depends on type, but we'll validate both optionally or logic check onSubmit
-        value: Yup.number().positive('Must be positive').required('Value is required'),
-        max_usage: Yup.number().positive().integer().required('Max usage is required'),
-        valid_from: Yup.date().required('Start date is required'),
-        valid_until: Yup.date().required('End date is required').min(Yup.ref('valid_from'), 'End date must be after start date'),
-    });
-
-    const formik = useFormik({
+    const formik = useFormik<PromotionValues>({
         initialValues: {
             code: '',
             value: 0,
@@ -28,7 +19,7 @@ const CreatePromotionPage: React.FC = () => {
             valid_from: '',
             valid_until: '',
         },
-        validationSchema,
+        validationSchema: createPromotionSchema,
         onSubmit: async (values) => {
             setLoading(true);
             setError('');

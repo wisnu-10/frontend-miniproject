@@ -11,7 +11,39 @@ import {
   checkReviewEligibility,
   createReview,
 } from "../services/review.service";
-import { FaStar, FaRegStar, FaStarHalfAlt, FaUserCircle } from "react-icons/fa";
+import { FaStar, FaRegStar, FaStarHalfAlt, FaUserCircle, FaCalendarAlt } from "react-icons/fa";
+import BackButton from "../components/BackButton";
+import { formatCurrency } from "../utils/currency";
+
+// Helper function to format start and end dates beautifully in Indonesian
+const formatEventDate = (startDateStr: string, endDateStr: string) => {
+  const start = new Date(startDateStr);
+  const end = new Date(endDateStr);
+
+  const dateOptions: Intl.DateTimeFormatOptions = {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  };
+
+  const timeOptions: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+
+  const startFormattedDate = new Intl.DateTimeFormat("id-ID", dateOptions).format(start);
+  const startFormattedTime = new Intl.DateTimeFormat("id-ID", timeOptions).format(start);
+  const endFormattedDate = new Intl.DateTimeFormat("id-ID", dateOptions).format(end);
+  const endFormattedTime = new Intl.DateTimeFormat("id-ID", timeOptions).format(end);
+
+  // If start and end are on the same day
+  if (startFormattedDate === endFormattedDate) {
+    return `${startFormattedDate} • ${startFormattedTime} - ${endFormattedTime} WIB`;
+  } else {
+    return `${startFormattedDate} (${startFormattedTime}) - ${endFormattedDate} (${endFormattedTime}) WIB`;
+  }
+};
 
 // Star rating display component
 const StarRating: React.FC<{ rating: number; size?: string }> = ({
@@ -190,6 +222,9 @@ const EventDetailsPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
+      <div className="mb-4">
+        <BackButton label="Kembali" />
+      </div>
       <div className="card lg:card-side bg-base-100 shadow-xl mb-6">
         <figure className="lg:w-1/2 h-96">
           <img
@@ -218,12 +253,14 @@ const EventDetailsPage: React.FC = () => {
 
           <p className="py-2 text-lg">{event.description}</p>
 
-          <div className="mb-4">
-            <h4 className="font-bold">Date & Time</h4>
-            <p>
-              {new Date(event.start_date).toLocaleString()} -{" "}
-              {new Date(event.end_date).toLocaleString()}
-            </p>
+          <div className="mb-6 bg-base-200/50 rounded-2xl p-4 border border-base-200">
+            <h4 className="font-bold text-sm text-base-content/60 uppercase tracking-wider mb-2">Date & Time</h4>
+            <div className="flex items-center gap-3 text-base-content/85">
+              <FaCalendarAlt className="text-primary text-xl shrink-0" />
+              <span className="font-semibold text-sm sm:text-base leading-relaxed">
+                {formatEventDate(event.start_date, event.end_date)}
+              </span>
+            </div>
           </div>
 
           <div className="stats shadow my-4 w-full">
@@ -231,7 +268,7 @@ const EventDetailsPage: React.FC = () => {
               <div className="stat-title">Price</div>
               <div className="stat-value text-primary">
                 {event.base_price > 0
-                  ? `Rp ${event.base_price.toLocaleString()}`
+                  ? formatCurrency(event.base_price)
                   : "Free"}
               </div>
             </div>
@@ -267,7 +304,7 @@ const EventDetailsPage: React.FC = () => {
                     <td className="font-semibold text-base">{ticket.name}</td>
                     <td className="text-primary font-medium text-base">
                       {ticket.price > 0
-                        ? `Rp ${ticket.price.toLocaleString()}`
+                        ? formatCurrency(ticket.price)
                         : "Free"}
                     </td>
                     <td className="text-base">
@@ -297,7 +334,7 @@ const EventDetailsPage: React.FC = () => {
                     Get{" "}
                     {promo.discount_percentage
                       ? `${promo.discount_percentage}%`
-                      : `Rp ${promo.discount_amount}`}{" "}
+                      : formatCurrency(promo.discount_amount ?? 0)}{" "}
                     off!
                   </p>
                   <div className="card-actions justify-end">
@@ -425,7 +462,7 @@ const EventDetailsPage: React.FC = () => {
                 key={review.id}
                 className="flex gap-4 p-4 bg-base-200 rounded-lg"
               >
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   {review.user?.profile_picture ? (
                     <img
                       src={review.user.profile_picture}
