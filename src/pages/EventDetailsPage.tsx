@@ -13,6 +13,7 @@ import {
 } from "../services/review.service";
 import { FaStar, FaRegStar, FaStarHalfAlt, FaUserCircle, FaCalendarAlt } from "react-icons/fa";
 import BackButton from "../components/BackButton";
+import { formatCurrency } from "../utils/currency";
 
 // Helper function to format start and end dates beautifully in Indonesian
 const formatEventDate = (startDateStr: string, endDateStr: string) => {
@@ -267,7 +268,7 @@ const EventDetailsPage: React.FC = () => {
               <div className="stat-title">Price</div>
               <div className="stat-value text-primary">
                 {event.base_price > 0
-                  ? `Rp ${event.base_price.toLocaleString()}`
+                  ? formatCurrency(event.base_price)
                   : "Free"}
               </div>
             </div>
@@ -303,7 +304,7 @@ const EventDetailsPage: React.FC = () => {
                     <td className="font-semibold text-base">{ticket.name}</td>
                     <td className="text-primary font-medium text-base">
                       {ticket.price > 0
-                        ? `Rp ${ticket.price.toLocaleString()}`
+                        ? formatCurrency(ticket.price)
                         : "Free"}
                     </td>
                     <td className="text-base">
@@ -333,7 +334,7 @@ const EventDetailsPage: React.FC = () => {
                     Get{" "}
                     {promo.discount_percentage
                       ? `${promo.discount_percentage}%`
-                      : `Rp ${promo.discount_amount}`}{" "}
+                      : formatCurrency(promo.discount_amount ?? 0)}{" "}
                     off!
                   </p>
                   <div className="card-actions justify-end">
