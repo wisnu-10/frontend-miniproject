@@ -4,7 +4,7 @@ import { useFormik } from "formik";
 import { registerSchema, type RegisterValues } from "../validation";
 import api from "../services/api";
 
-const RegisterPage: React.FC = () => {
+const OrganizerRegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
@@ -14,7 +14,7 @@ const RegisterPage: React.FC = () => {
       email: "",
       password: "",
       confirmPassword: "",
-      role: "CUSTOMER",
+      role: "ORGANIZER",
       phone_number: "",
       referral_code: "",
     },
@@ -23,7 +23,7 @@ const RegisterPage: React.FC = () => {
       setError("");
       try {
         await api.post("/auth/register", values);
-        navigate("/login");
+        navigate("/organizer/login");
       } catch (err: any) {
         if (err.response?.data?.errors) {
           setError(err.response.data.errors.map((e: any) => e.msg).join(", "));
@@ -48,7 +48,7 @@ const RegisterPage: React.FC = () => {
         className="p-8 bg-base-200 rounded-lg shadow-xl w-96"
       >
         <h2 className="text-3xl font-bold mb-6 text-center text-primary">
-          Customer Register
+          Organizer Register
         </h2>
         {error && <div className="alert alert-error mb-4 text-sm">{error}</div>}
 
@@ -131,23 +131,6 @@ const RegisterPage: React.FC = () => {
           {showFieldError("confirmPassword")}
         </div>
 
-        <div className="form-control mb-3">
-          <label className="label">
-            <span className="label-text font-semibold">
-              Referral Code (Optional)
-            </span>
-          </label>
-          <input
-            type="text"
-            name="referral_code"
-            placeholder="REF123"
-            value={formik.values.referral_code}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className="input input-bordered w-full"
-          />
-        </div>
-
         <button
           type="submit"
           className={`btn btn-primary w-full text-lg ${formik.isSubmitting ? "loading" : ""}`}
@@ -158,14 +141,14 @@ const RegisterPage: React.FC = () => {
 
         <div className="mt-4 text-center space-y-2">
           <p className="text-sm">
-            Are you an Organizer?{" "}
-            <Link to="/organizer/register" className="link link-primary font-semibold">
+            Are you a Customer?{" "}
+            <Link to="/register" className="link link-primary font-semibold">
               Register here
             </Link>
           </p>
           <p className="text-sm">
             Already have an account?{" "}
-            <Link to="/login" className="link link-primary">
+            <Link to="/organizer/login" className="link link-primary">
               Login
             </Link>
           </p>
@@ -175,4 +158,4 @@ const RegisterPage: React.FC = () => {
   );
 };
 
-export default RegisterPage;
+export default OrganizerRegisterPage;

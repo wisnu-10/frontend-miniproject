@@ -6,7 +6,7 @@ import { loginSchema, type LoginValues } from "../validation";
 import api from "../services/api";
 import { toast } from "react-toastify";
 
-const LoginPage: React.FC = () => {
+const OrganizerLoginPage: React.FC = () => {
   const { checkAuth } = useAuthStore();
   const navigate = useNavigate();
 
@@ -15,10 +15,10 @@ const LoginPage: React.FC = () => {
     validationSchema: loginSchema,
     onSubmit: async (values, { setSubmitting }) => {
       try {
-        await api.post("/auth/login", { ...values, role: "CUSTOMER" });
+        await api.post("/auth/login", { ...values, role: "ORGANIZER" });
         await checkAuth();
         toast.success("Login successful!");
-        navigate("/");
+        navigate("/organizer/dashboard");
       } catch (err: any) {
         toast.error(err.response?.data?.message || "Login failed");
       } finally {
@@ -34,7 +34,7 @@ const LoginPage: React.FC = () => {
         className="p-8 bg-base-200 rounded-lg shadow-xl w-96"
       >
         <h2 className="text-3xl font-bold mb-6 text-center text-primary">
-          Customer Login
+          Organizer Login
         </h2>
 
         <div className="form-control mb-4">
@@ -48,7 +48,7 @@ const LoginPage: React.FC = () => {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             className={`input input-bordered w-full ${formik.touched.email && formik.errors.email ? "input-error" : ""}`}
-            placeholder="email@example.com"
+            placeholder="organizer@example.com"
           />
           {formik.touched.email && formik.errors.email && (
             <span className="text-error text-xs mt-1">
@@ -95,8 +95,8 @@ const LoginPage: React.FC = () => {
 
         <div className="mt-4 text-center space-y-2">
           <p className="text-sm">
-            Are you an Organizer?{" "}
-            <Link to="/organizer/login" className="link link-primary font-semibold">
+            Are you a Customer?{" "}
+            <Link to="/login" className="link link-primary font-semibold">
               Log in here
             </Link>
           </p>
@@ -112,4 +112,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default OrganizerLoginPage;
