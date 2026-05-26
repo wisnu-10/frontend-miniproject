@@ -62,6 +62,11 @@ const CheckoutPage: React.FC = () => {
       const current = prev[ticketId] || 0;
       const newVal = Math.max(0, current + delta);
 
+      // Restrict total tickets to 1
+      const totalQty = Object.values(prev).reduce((sum, q) => sum + q, 0);
+      const newTotalQty = totalQty - current + newVal;
+      if (newTotalQty > 1) return prev;
+
       // Check availability
       const ticket = event?.ticket_types?.find(
         (t: TicketType) => t.id === ticketId,
@@ -231,7 +236,8 @@ const CheckoutPage: React.FC = () => {
                       className="btn btn-sm btn-circle btn-outline"
                       onClick={() => handleQuantityChange(ticket.id, 1)}
                       disabled={
-                        ticketQuantities[ticket.id] >= ticket.available_quantity
+                        ticketQuantities[ticket.id] >= ticket.available_quantity ||
+                        Object.values(ticketQuantities).reduce((sum, q) => sum + q, 0) >= 1
                       }
                     >
                       +

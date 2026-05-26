@@ -4,6 +4,7 @@ import api from "../services/api";
 import type { Event, PaginationMeta } from "../types";
 import FilterSidebar from "../components/FilterSidebar";
 import Pagination from "../components/Pagination";
+import { formatCurrency } from "../utils/currency";
 
 const EVENTS_PER_PAGE = 9;
 
@@ -188,7 +189,7 @@ const HomePage: React.FC = () => {
                           </span>
                           <span className="text-lg font-black text-base-content tracking-tight">
                             {event.base_price > 0
-                              ? `Rp ${event.base_price.toLocaleString()}`
+                              ? formatCurrency(event.base_price)
                               : "Free"}
                           </span>
                         </div>
